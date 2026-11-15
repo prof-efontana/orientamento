@@ -558,7 +558,7 @@ function renderRes(){
   }
   const pool=nodes.filter(n=>showFam[n.fam]);
   const r=ranking(tuNode,pool).slice(0,10);
-  box.innerHTML=`<h2>Gli indirizzi più vicini a te</h2>
+  box.innerHTML=`<h2>Gli indirizzi più vicini alle tue scelte</h2>
     <p class="hint">I nodi più grandi sulla mappa sono quelli più affini alle tue risposte. Tocca un indirizzo per saperne di più.</p>
     ${rankHTML(r,{num:true})}
     ${cfpSuggested(r)?`<div class="cfp"><p>${CFP_TEXT}</p><a href="${CFP_URL}" target="_blank" rel="noopener">Vedi i corsi sulla Bussola →</a></div>`:''}
@@ -638,30 +638,50 @@ function renderDoc(){
 function reportHTML(){
   const d=new Date().toLocaleDateString('it-IT');
   const r=ranking(tuNode,nodes.filter(n=>showFam[n.fam])).slice(0,10);
-  const risposte=MATERIE.filter(m=>answers[m.id]!==null).map(m=>`<tr><td>${m.n}</td><td style="text-align:right">${answers[m.id]}</td></tr>`).join('');
+  const risposte=MATERIE.filter(m=>answers[m.id]!==null).map(m=>`<li>${m.n}: <b>${answers[m.id]}</b></li>`).join('');
   const nonso=MATERIE.filter(m=>answers[m.id]===null).map(m=>m.n).join(', ');
-  // istantanea del grafo, con la vista iniziale e senza evidenziazioni
+  // istantanea del grafo: vista iniziale, senza evidenziazioni, ritagliata sui nodi per usare tutta la pagina
   const clone=svg.cloneNode(true);
-  clone.setAttribute('width','100%'); clone.setAttribute('style','width:100%;height:auto;border:1px solid #E7E3DA;border-radius:10px');
   clone.querySelector('#vp').setAttribute('transform','');
   clone.querySelectorAll('.dim,.hi,.sel,.school').forEach(x=>x.classList.remove('dim','hi','sel','school'));
-  return `<div class="rep"><h1>Gli indirizzi più vicini a me</h1><p class="sub">Mappa degli indirizzi delle superiori – Monza e Brianza · ${d}</p>
-    <h2>Indirizzi più affini</h2><ol>${r.map(o=>`<li><b>${esc(o.n.nome)}</b> – ${pct(o.s)}% <span class="fam" style="color:${FAM[o.n.fam].c}">${FAM[o.n.fam].n}</span><br><span class="sc">${o.n.scuole.map(s=>esc(DATA.scuole[s])).join(' · ')}</span></li>`).join('')}</ol>
-    ${cfpSuggested(r)?`<p class="sc"><b>Da guardare anche:</b> ${CFP_TEXT} ${CFP_URL}</p>`:''}
-    <h2>La mappa</h2>${clone.outerHTML}
-    <h2>Le mie risposte</h2><table>${risposte}</table>${nonso?`<p class="sc">«Non lo so»: ${nonso}.</p>`:''}
-    <p class="sc">È uno spunto per parlarne con famiglia e insegnanti, non un verdetto.</p></div>`;
+  const xs=act.map(n=>n.x), ys=act.map(n=>n.y);
+  const x0=Math.min(...xs)-75, x1=Math.max(...xs)+75, y0=Math.min(...ys)-34, y1=Math.max(...ys)+22;
+  clone.setAttribute('viewBox',`${x0.toFixed(0)} ${y0.toFixed(0)} ${(x1-x0).toFixed(0)} ${(y1-y0).toFixed(0)}`);
+  clone.removeAttribute('width'); clone.removeAttribute('height'); clone.removeAttribute('aria-label');
+  clone.setAttribute('class','map');
+  const legenda=FAMS.map(f=>`<span><i style="background:${FAM[f].c}"></i>${FAM[f].n}</span>`).join('')+`<span><i style="background:${FAM.U.c}"></i>Tu</span>`;
+  return `<div class="rep">
+    <section class="p1">
+      <h1>La mappa delle tue scelte</h1><p class="sub">Mappa degli indirizzi delle superiori – Monza e Brianza · ${d}</p>
+      ${clone.outerHTML}
+      <p class="leg">${legenda}</p>
+      <p class="sc">Ogni pallino è un indirizzo: quelli vicini hanno materie simili. I pallini più grandi sono i più affini alle tue risposte.</p>
+      <h2>Le tue risposte</h2><ul class="ans">${risposte}</ul>${nonso?`<p class="sc">«Non lo so»: ${nonso}.</p>`:''}
+    </section>
+    <section class="p2">
+      <h1>Gli indirizzi più vicini alle tue scelte</h1><p class="sub">I primi 10, con la percentuale di affinità e le scuole della provincia che li offrono</p>
+      <ol>${r.map(o=>`<li><b>${esc(o.n.nome)}</b> – ${pct(o.s)}% <span class="fam" style="color:${FAM[o.n.fam].c}">${FAM[o.n.fam].n}</span><br><span class="sc">${o.n.scuole.map(s=>esc(DATA.scuole[s])).join(' · ')}</span></li>`).join('')}</ol>
+      ${cfpSuggested(r)?`<p class="box"><b>Da guardare anche:</b> ${CFP_TEXT}<br>${CFP_URL}</p>`:''}
+      <p class="sc">È uno spunto per parlarne con famiglia e insegnanti, non un verdetto: contano anche il metodo di studio, i progetti per il futuro e le scuole che visiterai agli open day.</p>
+    </section></div>`;
 }
-const REPORT_CSS=`body{font-family:"Nunito Sans",Arial,sans-serif;color:#1F2A55;margin:18px}h1{font-family:Poppins,Arial,sans-serif;font-size:20px;margin:0}h2{font-family:Poppins,Arial,sans-serif;font-size:15px;margin:18px 0 6px;color:#13A89E}
-.sub,.sc{color:#5D6680;font-size:11px}ol{padding-left:20px;font-size:12.5px}li{margin-bottom:5px}.fam{font-size:11px;font-weight:700}table{border-collapse:collapse;font-size:12px}td{border-bottom:1px solid #E7E3DA;padding:2px 10px 2px 0}
-svg{max-height:13cm}svg .link{stroke:#8D939A;stroke-opacity:.4}svg .link.tu{stroke:#FF6B57;stroke-opacity:.8;stroke-dasharray:5 3}svg .node circle{stroke:#fff;stroke-width:2}
+const REPORT_CSS=`*{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}body{font-family:"Nunito Sans",Arial,sans-serif;color:#1F2A55;margin:0}
+h1{font-family:Poppins,Arial,sans-serif;font-size:20px;margin:0}h2{font-family:Poppins,Arial,sans-serif;font-size:15px;margin:14px 0 6px;color:#13A89E}
+.sub,.sc{color:#5D6680;font-size:11px;margin:2px 0 8px}
+.p2{page-break-before:always;break-before:page}
+svg.map{display:block;width:100%;height:auto;max-height:175mm;border:1px solid #E7E3DA;border-radius:10px;margin-top:6px}
+.leg{font-size:11px;margin:6px 0 2px}.leg span{margin-right:14px;white-space:nowrap}.leg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle}
+ul.ans{columns:3;column-gap:18px;padding:0;margin:0;list-style:none;font-size:11.5px}ul.ans li{padding:1px 0;break-inside:avoid}
+ol{padding-left:22px;font-size:13px}li{margin-bottom:7px}.fam{font-size:11px;font-weight:700}
+.box{background:#FFF4D6;border:1px solid #FFC145;border-radius:8px;padding:8px 10px;font-size:11.5px;margin:10px 0}
+svg .link{stroke:#8D939A;stroke-opacity:.4}svg .link.tu{stroke:#FF6B57;stroke-opacity:.8;stroke-dasharray:5 3}svg .node circle{stroke:#fff;stroke-width:2}
 svg .node text{font-size:11px;fill:#1F2A55;paint-order:stroke;stroke:#fff;stroke-width:3px;font-family:Arial,sans-serif}svg .node.tu text{fill:#FF6B57;font-weight:800}
-h2{page-break-after:avoid}svg,table{page-break-inside:avoid}@page{margin:12mm}`;
+.p1,svg{page-break-inside:avoid;break-inside:avoid}@page{size:A4;margin:12mm}`;
 function savePDF(){
   const html=reportHTML();
   let w=null; try{ w=window.open('','_blank'); }catch(e){}
   if(w&&w.document){
-    w.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><title>Gli indirizzi più vicini a me</title><style>${REPORT_CSS}</style></head><body>${html}<script>setTimeout(function(){window.print()},400)<\/script></body></html>`);
+    w.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><title>Gli indirizzi più vicini alle tue scelte</title><style>${REPORT_CSS}</style></head><body>${html}<script>setTimeout(function(){window.print()},400)<\/script></body></html>`);
     w.document.close(); return;
   }
   // ripiego: stampa della pagina stessa con una vista dedicata
