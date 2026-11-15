@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scopri gli indirizzi più vicini a te – Monza e Brianza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Palette ===== */
+:root{
+  --notte:#1F2A55;      /* titoli, intestazioni */
+  --turchese:#13A89E;   /* accenti, selezioni */
+  --turchese-chiaro:#E2F5F3;
+  --corallo:#FF6B57;    /* pulsanti principali */
+  --sole:#FFC145;       /* evidenze */
+  --bg:#FAF8F4; --panel:#FFFFFF; --ink:#1F2A55; --muted:#5D6680; --line:#E7E3DA;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;font-size:16px}
+h1,h2,h3,.title{font-family:Poppins,"Nunito Sans",system-ui,sans-serif}
+button{font:inherit}
+/* ===== Intestazione e schede principali ===== */
+header.app{background:var(--notte);color:#fff;padding:12px 16px 0}
+header.app h1{margin:0;font-size:1.15rem;line-height:1.3}
+header.app h1 span{color:var(--sole)}
+nav.views{display:flex;gap:4px;margin-top:10px}
+nav.views button{border:0;background:transparent;color:#C9D0EA;padding:10px 14px;border-radius:10px 10px 0 0;cursor:pointer;font-weight:700}
+nav.views button.on{background:var(--bg);color:var(--notte)}
+.view{flex:1;min-height:0}
+.view[hidden]{display:none!important}
+/* ===== Questionario ===== */
+#quiz{overflow:auto}
+.quiz-wrap{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}
+.card.intro{border-left:6px solid var(--turchese)}
+.card h2{margin:0 0 8px;font-size:1.15rem}
+.warn{background:#FFF4D6;border:1px solid var(--sole);border-radius:12px;padding:10px 12px;margin-top:10px;font-weight:600}
+details.how{margin-top:10px}
+details.how summary{cursor:pointer;color:var(--turchese);font-weight:700}
+table.map{border-collapse:collapse;font-size:.88rem;margin-top:8px;width:100%}
+table.map td{border-bottom:1px solid var(--line);padding:4px 6px;vertical-align:top}
+.steps{display:flex;gap:8px;align-items:center;margin:4px 0 12px;color:var(--muted);font-weight:700}
+.steps .bar{flex:1;height:8px;background:#ECE8DF;border-radius:4px;overflow:hidden}
+.steps .bar i{display:block;height:100%;background:var(--turchese);transition:width .3s}
+.subj{padding:12px 0;border-bottom:1px solid var(--line)}
+.subj:last-child{border-bottom:0}
+.subj .name{font-weight:700}
+.subj .desc{color:var(--muted);font-size:.9rem;margin-top:2px}
+.scale{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.scale button{min-width:42px;height:42px;border-radius:12px;border:2px solid var(--line);background:#fff;cursor:pointer;font-weight:700;color:var(--ink)}
+.scale button.ns{padding:0 10px;font-weight:600;color:var(--muted)}
+.scale button.on{background:var(--turchese);border-color:var(--turchese);color:#fff}
+.scale button.ns.on{background:#DCDFEA;border-color:#DCDFEA;color:var(--ink)}
+.legend-scale{font-size:.82rem;color:var(--muted);margin-top:4px}
+.nav-btns{display:flex;gap:10px;justify-content:space-between;margin-top:14px;flex-wrap:wrap}
+.btn{border:2px solid var(--notte);background:#fff;color:var(--notte);border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:700}
+.btn.cta{background:var(--corallo);border-color:var(--corallo);color:#fff;font-size:1.05rem;padding:12px 20px}
+.btn.small{padding:6px 12px;font-size:.88rem;border-width:1px}
+.msg{color:#C0392B;font-weight:600;margin-top:8px}
+/* ===== Mappa ===== */
+/* mappa a tutta larghezza, risultati sotto */
+#mapview{display:block;overflow:auto;min-height:0}
+#mapview #graph-wrap{height:min(80vh,860px);min-height:420px;border-bottom:1px solid var(--line)}
+#graph-wrap{position:relative;min-height:0}
+svg#graph{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+#toolbar{position:absolute;left:10px;top:10px;right:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+#toolbar>*{pointer-events:auto}
+#toolbar button.fam,#toolbar select{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fffffff2;border-radius:999px;padding:5px 11px;font-size:.82rem;cursor:pointer;color:var(--ink)}
+#toolbar button.fam[aria-pressed=false]{opacity:.45;text-decoration:line-through}
+#toolbar select{border-radius:10px;max-width:250px}
+#zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px}
+#zoom button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:1.2rem;font-weight:700;cursor:pointer;color:var(--notte)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
+aside{background:var(--panel);display:flex;flex-direction:column}
+aside .tabs,aside section{width:100%;max-width:980px;margin:0 auto}
+aside section{overflow:visible!important}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;border:0;background:none;padding:12px 6px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;font-weight:700}
+.tabs button.on{color:var(--notte);border-bottom-color:var(--corallo)}
+aside section{padding:14px 16px 26px;overflow:auto;flex:1}
+aside h2{font-size:1.08rem;margin:0 0 6px}
+aside h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 0 8px}
+.chip{display:inline-block;font-size:.76rem;padding:2px 10px;border-radius:999px;color:#fff;font-weight:700}
+.hint{color:var(--muted);font-size:.92rem;line-height:1.45}
+.note{font-size:.8rem;color:var(--muted);line-height:1.45;margin-top:14px}
+.descr{background:var(--turchese-chiaro);border-radius:12px;padding:10px 12px;line-height:1.45;margin:10px 0 0}
+.aff{font-weight:700;color:var(--corallo);margin-top:8px}
+.row{display:grid;grid-template-columns:1fr 110px 34px;align-items:center;gap:8px;font-size:.85rem;padding:3px 0}
+.row input{width:100%;accent-color:var(--turchese)}
+.row output{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+ol.rank{list-style:none;padding:0;margin:0;counter-reset:r}
+ol.rank li{display:grid;grid-template-columns:1fr 46px;gap:8px;align-items:center;padding:5px 0;font-size:.9rem}
+ol.rank.num li button::before{counter-increment:r;content:counter(r) ".";font-weight:700;color:var(--muted);min-width:20px}
+ol.rank li button{all:unset;cursor:pointer;display:flex;align-items:center;gap:7px}
+ol.rank li button:hover{text-decoration:underline}
+ol.rank .bar{grid-column:1/-1;height:5px;background:#EEE;border-radius:3px;overflow:hidden;margin-top:-2px}
+ol.rank .bar i{display:block;height:100%}
+ol.rank .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
+.areas{display:grid;grid-template-columns:150px 1fr 38px;gap:4px 8px;font-size:.82rem;align-items:center}
+.areas .b{height:9px;background:#EEE;border-radius:3px;overflow:hidden}
+.areas .b i{display:block;height:100%}
+.areas span:nth-child(3n){text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+table.mat{width:100%;border-collapse:collapse;font-size:.82rem}
+table.mat td{padding:4px 2px;border-bottom:1px solid #F0EEE8;vertical-align:top}
+table.mat td.h{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+table.mat td.a{color:var(--muted);font-size:.75rem;white-space:nowrap}
+table.mat label{display:flex;gap:6px;align-items:flex-start;cursor:pointer}
+table.mat tr.car td:first-child{font-weight:700}
+ul.scuole{margin:0;padding-left:18px;font-size:.88rem;line-height:1.5}
+#copied{font-size:.8rem;color:var(--turchese);margin-left:6px}
+.link{stroke:#8D939A;stroke-opacity:.35}
+.link.hi{stroke:var(--notte);stroke-opacity:.85}
+.link.dim{stroke-opacity:.06}
+.link.tu{stroke:var(--corallo);stroke-opacity:.7;stroke-dasharray:5 3}
+.node{cursor:grab}
+.node circle{stroke:#fff;stroke-width:2}
+.node text{font-size:11.5px;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round;pointer-events:none;font-family:"Nunito Sans",system-ui,sans-serif;font-weight:600}
+.node.tu text{font-weight:800;font-size:13px;fill:var(--corallo)}
+.node.sel circle{stroke:var(--notte);stroke-width:3}
+.node.sel text{font-weight:800}
+.node.dim{opacity:.18}
+.node.school circle{stroke:var(--notte);stroke-width:3}
+.cfp{background:#FFF4D6;border:1px solid var(--sole);border-radius:12px;padding:10px 12px;margin-top:14px;font-size:.9rem;line-height:1.45}
+.cfp p{margin:0 0 6px}
+.cfp a{color:var(--notte);font-weight:700}
+#print-area{display:none}
+@media (max-width:860px){
+  .card{padding:14px 12px}
+  .scale{gap:4px}
+  .scale button{min-width:36px;height:40px}
+  .scale button.ns{padding:0 8px}
+  #mapview #graph-wrap{height:72vh;min-height:360px}
+  #toolbar button.fam,#toolbar select{font-size:.74rem;padding:4px 8px}
+  aside section{overflow:visible}
+  .areas{grid-template-columns:120px 1fr 34px}
+}
+@media print{
+  header.app,.view{display:none!important}
+  #print-area{display:block!important}
+}
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>Scopri gli indirizzi <span>più vicini a te</span> – Monza e Brianza</h1>
+  <nav class="views">
+    <button data-view="quiz" class="on">1 · Le tue materie</button>
+    <button data-view="mapview">2 · La mappa</button>
+  </nav>
+</header>
+
+<!-- ===== Vista 1: questionario ===== -->
+<div id="quiz" class="view">
+  <div class="quiz-wrap">
+    <div class="card intro">
+      <h2>Come funziona</h2>
+      <p>Ogni indirizzo delle superiori dedica le sue ore a materie diverse. Dicci quanto ti piacciono le materie e la mappa ti mostrerà quali indirizzi della provincia di Monza e Brianza somigliano di più ai tuoi gusti.</p>
+      <p>Ci vogliono circa 3 minuti. Il risultato è uno spunto per parlarne con la tua famiglia e i tuoi insegnanti, non un verdetto.</p>
+      <div class="warn">Non conosci una materia? Nessun problema: lascia selezionato «Non lo so». Quella materia non verrà usata nel calcolo. Lo 0 invece vuol dire «non mi piace per niente» e conta.</div>
+      <details class="how"><summary>Come vengono usate le tue risposte</summary><div id="how"></div></details>
+    </div>
+    <div class="steps"><span id="step-label"></span><span class="bar"><i id="step-bar"></i></span></div>
+    <div class="card" id="step-card"></div>
+    <div class="nav-btns">
+      <button class="btn" id="prev">← Indietro</button>
+      <button class="btn" id="next">Avanti →</button>
+    </div>
+    <div class="msg" id="quiz-msg"></div>
+  </div>
+</div>
+
+<!-- ===== Vista 2: mappa ===== -->
+<div id="mapview" class="view" hidden>
+  <div id="graph-wrap">
+    <svg id="graph" aria-label="Mappa degli indirizzi"><g id="vp"></g></svg>
+    <div id="toolbar"></div>
+    <div id="zoom">
+      <button id="zin" aria-label="Ingrandisci">+</button>
+      <button id="zout" aria-label="Rimpicciolisci">−</button>
+      <button id="zreset" aria-label="Vista iniziale">⟲</button>
+    </div>
+  </div>
+  <aside>
+    <nav class="tabs">
+      <button data-tab="res" class="on">Il tuo risultato</button>
+      <button data-tab="det">Dettagli</button>
+      <button data-tab="doc">Per i docenti</button>
+    </nav>
+    <section id="tab-res"></section>
+    <section id="tab-det" hidden></section>
+    <section id="tab-doc" hidden></section>
+  </aside>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+const DATA = {"nodi": [{"id": "classico", "fam": "L", "nome": "Liceo classico", "breve": "Classico", "scuole": ["Ettore-Majorana-Desio", "Marie-Curie-Meda", "Antonio-Banfi-Vimercate", "Bartolomeo-Zucchi-Monza", "Collegio-Villoresi-San-Giuseppe-Monza", "Istituto-Leone-Dehon-Monza", "Don-Carlo-Gnocchi-Carate-Brianza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura latina", "h": 4.4, "a": {"cla": 1}, "c": true}, {"n": "Lingua e cultura greca", "h": 3.4, "a": {"cla": 1}, "c": true}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia", "h": 1.8, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.8, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 2.0, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Studi latino, greco, letteratura, storia e filosofia per capire le radici della nostra cultura. Allena molto il ragionamento e lo studio, e prepara a qualsiasi facoltà universitaria."}, {"id": "scientifico", "fam": "L", "nome": "Liceo scientifico – tradizionale", "breve": "Scientifico", "scuole": ["Marie-Curie-Meda", "Iris-Versari-Cesano-Maderno", "Europa-Unita-Lissone", "Paolo-Frisi-Monza", "Ettore-Majorana-Desio", "Antonio-Banfi-Vimercate", "Don-Carlo-Gnocchi-Carate-Brianza", "Collegio-S.Antonio-Busnago", "Collegio-Della-Guastalla-Monza", "Collegio-Villoresi-San-Giuseppe-Monza", "Istituto-Europeo-Marcello-Candia-Seregno", "Collegio-Arcivescovile-Ballerini-Seregno"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura latina", "h": 3.0, "a": {"cla": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.8, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 4.4, "a": {"mat": 1}, "c": true}, {"n": "Fisica", "h": 2.6, "a": {"fis": 1}, "c": true}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 2.6, "a": {"sci": 1}, "c": false}, {"n": "Disegno e storia dell'arte", "h": 2.0, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Matematica, fisica e scienze sono al centro, insieme a latino, letteratura e filosofia. È pensato per chi vuole proseguire all'università, soprattutto in ambito scientifico."}, {"id": "osa", "fam": "L", "nome": "Liceo scientifico – scienze applicate", "breve": "Sc. applicate", "scuole": ["Leonardo-Da-Vinci-Carate-Brianza", "Iris-Versari-Cesano-Maderno", "Ettore-Majorana-Cesano-Maderno", "Ettore-Majorana-Desio", "Enrico-Fermi-Desio", "Europa-Unita-Lissone", "Marie-Curie-Meda", "Paolo-Frisi-Monza", "Achille-Mapelli-Monza", "Pino-Hensemberger-Monza", "Primo-Levi-Seregno", "Antonio-Banfi-Vimercate", "Albert-Einstein-Vimercate", "Collegio-Villoresi-San-Giuseppe-Monza", "Collegio-S.Antonio-Busnago", "Istituto-Maddalena-di-Canossa-Monza", "Collegio-Arcivescovile-Ballerini-Seregno", "Collegio-Della-Guastalla-Monza", "Don-Carlo-Gnocchi-Carate-Brianza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica", "h": 4.2, "a": {"mat": 1}, "c": true}, {"n": "Informatica", "h": 2.0, "a": {"inf": 1}, "c": false}, {"n": "Fisica", "h": 2.6, "a": {"fis": 1}, "c": true}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 4.4, "a": {"sci": 1}, "c": false}, {"n": "Disegno e storia dell'arte", "h": 2.0, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Come lo scientifico, ma senza latino e con più scienze, informatica e laboratorio. Adatto a chi ama gli esperimenti e pensa a facoltà scientifiche o tecnologiche."}, {"id": "sportivo", "fam": "L", "nome": "Liceo scientifico – indirizzo sportivo", "breve": "Sportivo", "scuole": ["Leonardo-Da-Vinci-Carate-Brianza", "Achille-Mapelli-Monza", "Istituto-Paci-Seregno", "Collegio-Villoresi-San-Giuseppe-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 4.4, "a": {"mat": 1}, "c": true}, {"n": "Fisica", "h": 2.6, "a": {"fis": 1}, "c": true}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 3.0, "a": {"sci": 1}, "c": false}, {"n": "Diritto ed economia dello sport", "h": 1.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 3.0, "a": {"spo": 1}, "c": false}, {"n": "Discipline sportive", "h": 2.4, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Unisce le materie scientifiche allo sport: discipline sportive, scienze motorie e diritto ed economia dello sport. Per chi ama lo sport e anche matematica e scienze."}, {"id": "linguistico", "fam": "L", "nome": "Liceo linguistico", "breve": "Linguistico", "scuole": ["M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza", "Giuseppe-Parini-Seregno", "Marie-Curie-Meda", "M.L.-King-Muggio", "Mose-Bianchi-Monza", "Carlo-Porta-Monza", "Ezio-Vanoni-Vimercate", "Collegio-Bianconi-Monza", "Istituto-Europeo-Marcello-Candia-Seregno"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura latina", "h": 0.8, "a": {"cla": 1}, "c": false}, {"n": "Lingua e cultura straniera 1", "h": 3.4, "a": {"lin": 1}, "c": true}, {"n": "Lingua e cultura straniera 2", "h": 3.6, "a": {"lin": 1}, "c": false}, {"n": "Lingua e cultura straniera 3", "h": 3.6, "a": {"lin": 1}, "c": true}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 2.0, "a": {"sci": 1}, "c": false}, {"n": "Disegno e storia dell'arte", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si studiano tre lingue straniere, anche con insegnanti di madrelingua, insieme a letteratura, storia e filosofia. Per chi ama comunicare, viaggiare e conoscere altre culture."}, {"id": "scienze-umane", "fam": "L", "nome": "Liceo delle scienze umane", "breve": "Sc. umane", "scuole": ["Iris-Versari-Cesano-Maderno", "Carlo-Porta-Monza", "Giuseppe-Parini-Seregno", "Ezio-Vanoni-Vimercate", "Istituto-Leone-Dehon-Monza", "Don-Carlo-Gnocchi-Carate-Brianza", "Istituto-Maddalena-di-Canossa-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura latina", "h": 2.4, "a": {"cla": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.8, "a": {"fil": 1}, "c": false}, {"n": "Scienze umane (antropologia, psicologia, sociologia)", "h": 4.6, "a": {"uma": 1}, "c": true}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 2.0, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Al centro ci sono psicologia, pedagogia, sociologia e antropologia: come le persone crescono, imparano e vivono insieme. C'è anche il latino; adatto a chi pensa all'educazione e al sociale."}, {"id": "les", "fam": "L", "nome": "Liceo delle scienze umane – economico-sociale", "breve": "Economico-sociale", "scuole": ["Carlo-Porta-Monza", "M.L.-King-Muggio", "Giuseppe-Parini-Seregno", "Floriani-Vimercate", "Istituto-Maddalena-di-Canossa-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Scienze umane (antropologia, metodologia della ricerca, psicologia, sociologia)", "h": 3.0, "a": {"uma": 1}, "c": true}, {"n": "Diritto ed economia politica", "h": 3.0, "a": {"eco": 1}, "c": true}, {"n": "Lingua e cultura straniera 1", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Lingua e cultura straniera 2", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 3.0, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Unisce scienze umane, diritto, economia e due lingue straniere, senza latino. Aiuta a capire la società di oggi: lavoro, economia, istituzioni e comportamenti delle persone."}, {"id": "made-in-italy", "fam": "L", "nome": "Liceo del Made in Italy", "breve": "Liceo Made in Italy", "scuole": ["M.L.-King-Muggio", "Martino-Bassi-Seregno"], "materie": [{"n": "Lingua e letteratura italiana", "h": 3.2, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 0.6, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Diritto", "h": 0.6, "a": {"eco": 1}, "c": false}, {"n": "Economia politica", "h": 0.6, "a": {"eco": 1}, "c": false}, {"n": "Scienze giuridiche per il made in Italy", "h": 1.8, "a": {"eco": 1}, "c": true}, {"n": "Scienze economiche per il made in Italy", "h": 1.8, "a": {"eco": 1}, "c": true}, {"n": "Lingua e cultura straniera 1", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Lingua e cultura straniera 2", "h": 2.2, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali", "h": 0.4, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte e del design", "h": 1.4, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 1.6, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Liceo nuovo che studia economia, diritto e lingue applicati alle imprese italiane di moda, design e alimentare. Per chi è curioso del mondo delle aziende e del marketing."}, {"id": "musicale", "fam": "L", "nome": "Liceo musicale", "breve": "Musicale", "scuole": ["Bartolomeo-Zucchi-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 2.0, "a": {"art": 1}, "c": false}, {"n": "Esecuzione e interpretazione", "h": 2.4, "a": {"mus": 1}, "c": false}, {"n": "Teoria, analisi e composizione", "h": 3.0, "a": {"mus": 1}, "c": true}, {"n": "Storia della musica", "h": 2.0, "a": {"mus": 1}, "c": false}, {"n": "Laboratorio di musica d'insieme", "h": 2.6, "a": {"mus": 1}, "c": false}, {"n": "Tecnologie musicali", "h": 2.0, "a": {"mus": 1}, "c": true}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Oltre alle materie liceali si suona uno strumento e si studiano teoria, storia della musica e tecnologie musicali. Si entra con una prova di ammissione."}, {"id": "art-architettura", "fam": "L", "nome": "Liceo artistico – architettura e ambiente", "breve": "Art. Architettura", "scuole": ["Amedeo-Modigliani-Giussano", "Nanni-Valentini-Monza", "Preziosissimo-Sangue-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Chimica dei materiali", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 3.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche e pittoriche", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline plastiche e scultoree", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio artistico", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio di architettura", "h": 4.0, "a": {"art": 1}, "c": false}, {"n": "Discipline progettuali architettura e ambiente", "h": 3.6, "a": {"art": 1}, "c": true}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Nel biennio si disegna, si dipinge e si modella; poi si progettano edifici e spazi, a mano e al computer. Per chi ama il disegno e immagina case, città e ambienti."}, {"id": "art-figurative", "fam": "L", "nome": "Liceo artistico – arti figurative", "breve": "Art. Arti figurative", "scuole": ["M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza", "Amedeo-Modigliani-Giussano", "Nanni-Valentini-Monza", "Preziosissimo-Sangue-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Chimica dei materiali", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 3.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche e pittoriche", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline pittoriche", "h": 1.8, "a": {"art": 1}, "c": true}, {"n": "Discipline plastiche e scultoree", "h": 3.0, "a": {"art": 1}, "c": true}, {"n": "Laboratorio artistico", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio della figurazione – pittura", "h": 2.0, "a": {"art": 1}, "c": false}, {"n": "Laboratorio della figurazione – scultura", "h": 2.0, "a": {"art": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Pittura e scultura sono protagoniste: si sperimentano tecniche e materiali nei laboratori artistici. Per chi ama esprimersi con le immagini e le forme."}, {"id": "art-audiovisivo", "fam": "L", "nome": "Liceo artistico – audiovisivo e multimediale", "breve": "Art. Audiovisivo", "scuole": ["Amedeo-Modigliani-Giussano", "Nanni-Valentini-Monza", "Albert-Einstein-Vimercate", "Preziosissimo-Sangue-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 1.6, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 3.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche e pittoriche", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline plastiche e scultoree", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio artistico", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio audiovisivo e multimediale", "h": 4.0, "a": {"art": 1}, "c": false}, {"n": "Discipline audiovisive e multimediali", "h": 3.6, "a": {"art": 1}, "c": true}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Fotografia, video, animazione e montaggio: si impara a raccontare con le immagini in movimento. Per chi sogna cinema, video e comunicazione visiva."}, {"id": "art-design", "fam": "L", "nome": "Liceo artistico – design", "breve": "Art. Design", "scuole": ["Amedeo-Modigliani-Giussano", "Giuseppe-Meroni-Lissone", "Nanni-Valentini-Monza", "Preziosissimo-Sangue-Monza", "Albert-Einstein-Vimercate", "M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Chimica dei materiali", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 3.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche e pittoriche", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline plastiche e scultoree", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio artistico", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio del design", "h": 4.0, "a": {"art": 1}, "c": false}, {"n": "Discipline progettuali design", "h": 3.6, "a": {"art": 1}, "c": true}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si progettano oggetti, arredi e prodotti, dall'idea al prototipo, nei laboratori e al computer. Per chi ama inventare cose belle e utili."}, {"id": "art-grafica", "fam": "L", "nome": "Liceo artistico – grafica", "breve": "Art. Grafica", "scuole": ["M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza", "Ettore-Majorana-Cesano-Maderno", "Amedeo-Modigliani-Giussano", "Nanni-Valentini-Monza", "Preziosissimo-Sangue-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 1.6, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 3.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche e pittoriche", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline plastiche e scultoree", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio artistico", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio di grafica", "h": 4.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche", "h": 3.6, "a": {"art": 1}, "c": true}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si progettano loghi, manifesti, impaginati e comunicazione visiva, a mano e con i programmi di grafica. Per chi ama disegnare e comunicare con le immagini."}, {"id": "art-scenografia", "fam": "L", "nome": "Liceo artistico – scenografia", "breve": "Art. Scenografia", "scuole": ["Amedeo-Modigliani-Giussano", "Nanni-Valentini-Monza", "Preziosissimo-Sangue-Monza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua e cultura straniera", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Filosofia", "h": 1.2, "a": {"fil": 1}, "c": false}, {"n": "Matematica (con informatica al primo biennio)", "h": 2.4, "a": {"mat": 1}, "c": false}, {"n": "Fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze naturali (biologia, chimica, scienze della Terra)", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Chimica dei materiali", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Storia dell'arte", "h": 3.0, "a": {"art": 1}, "c": false}, {"n": "Discipline grafiche e pittoriche", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline plastiche e scultoree", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio artistico", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Laboratorio di scenografia", "h": 3.6, "a": {"art": 1}, "c": false}, {"n": "Discipline geometriche e scenografiche", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Discipline progettuali e scenografiche", "h": 2.8, "a": {"art": 1}, "c": true}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si progettano e si realizzano scene per teatro, cinema ed eventi. Per chi ama il disegno, il teatro e i lavori manuali creativi."}, {"id": "afm", "fam": "E", "nome": "Amministrazione, finanza e marketing", "breve": "AFM", "scuole": ["M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza", "Iris-Versari-Cesano-Maderno", "Elsa-Morante-Limbiate", "Europa-Unita-Lissone", "Mose-Bianchi-Monza", "Achille-Mapelli-Monza", "Martino-Bassi-Seregno", "Ezio-Vanoni-Vimercate", "Collegio-Villoresi-San-Giuseppe-Monza", "Istituto-Paci-Seregno", "Istituto-San-Carlo-Borromeo-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.6, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Geografia economica", "h": 0.6, "a": {"ita": 1}, "c": false}, {"n": "Seconda lingua comunitaria", "h": 1.4, "a": {"lin": 1}, "c": false}, {"n": "Economia aziendale", "h": 4.0, "a": {"eco": 1}, "c": true}, {"n": "Informatica applicata", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Diritto", "h": 1.6, "a": {"eco": 1}, "c": false}, {"n": "Economia politica", "h": 1.2, "a": {"eco": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Economia aziendale, diritto, lingue e informatica per capire come funziona un'azienda: conti, marketing, finanza. Prepara al lavoro in ufficio o all'università."}, {"id": "afm-sia", "fam": "E", "nome": "AFM – sistemi informativi aziendali", "breve": "AFM – SIA", "scuole": ["Iris-Versari-Cesano-Maderno", "Elsa-Morante-Limbiate", "Europa-Unita-Lissone", "Mose-Bianchi-Monza", "Martino-Bassi-Seregno", "Ezio-Vanoni-Vimercate", "Achille-Mapelli-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.6, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Geografia economica", "h": 0.6, "a": {"ita": 1}, "c": false}, {"n": "Seconda lingua comunitaria", "h": 1.0, "a": {"lin": 1}, "c": false}, {"n": "Economia aziendale", "h": 3.2, "a": {"eco": 1}, "c": true}, {"n": "Informatica applicata", "h": 2.4, "a": {"inf": 1}, "c": true}, {"n": "Diritto", "h": 1.4, "a": {"eco": 1}, "c": false}, {"n": "Economia politica", "h": 1.0, "a": {"eco": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Come AFM, ma con molta più informatica: dati, programmi e sistemi informativi delle aziende. Per chi è interessato sia all'economia sia al computer."}, {"id": "afm-rim", "fam": "E", "nome": "AFM – relazioni internazionali per il marketing", "breve": "AFM – RIM", "scuole": ["Primo-Levi-Seregno", "M.L.-King-Muggio", "Achille-Mapelli-Monza", "Elsa-Morante-Limbiate", "M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza", "Collegio-Bianconi-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.6, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Geografia economica", "h": 0.6, "a": {"ita": 1}, "c": false}, {"n": "Seconda lingua comunitaria", "h": 1.8, "a": {"lin": 1}, "c": false}, {"n": "Terza lingua comunitaria", "h": 0.6, "a": {"lin": 1}, "c": false}, {"n": "Economia aziendale", "h": 3.4, "a": {"eco": 1}, "c": true}, {"n": "Informatica applicata", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Diritto", "h": 1.2, "a": {"eco": 1}, "c": false}, {"n": "Relazioni internazionali", "h": 1.2, "a": {"eco": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Come AFM, con più lingue straniere e relazioni internazionali: commercio con l'estero e marketing internazionale. Per chi ama le lingue e il mondo delle aziende."}, {"id": "turismo", "fam": "E", "nome": "Turismo", "breve": "Turismo", "scuole": ["M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza", "Elsa-Morante-Limbiate", "Europa-Unita-Lissone", "Mose-Bianchi-Monza", "Achille-Mapelli-Monza", "M.L.-King-Muggio", "Martino-Bassi-Seregno", "Ezio-Vanoni-Vimercate"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.6, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Economia aziendale", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Geografia turistica", "h": 0.6, "a": {"ita": 1}, "c": false}, {"n": "Seconda lingua comunitaria", "h": 2.6, "a": {"lin": 1}, "c": false}, {"n": "Terza lingua straniera", "h": 1.8, "a": {"lin": 1}, "c": false}, {"n": "Discipline turistiche aziendali", "h": 1.8, "a": {"eco": 1}, "c": true}, {"n": "Legislazione turistica dei beni culturali e ambientali", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Territorio e turismo", "h": 1.2, "a": {"ita": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Tre lingue straniere, geografia del turismo, diritto ed economia applicati al turismo. Si impara a organizzare viaggi ed eventi e a valorizzare il patrimonio culturale."}, {"id": "agraria-pta", "fam": "T", "nome": "Agraria – produzioni e tecnologie agroalimentari per il made in Italy", "breve": "Agraria – produzioni", "scuole": ["Luigi-Castiglioni-Limbiate", "Achille-Mapelli-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Informatica e smart farming", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Agrobiologia", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Fondamenti di scienze agrarie", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Produzioni animali", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Produzioni vegetali", "h": 2.0, "a": {"tec": 1}, "c": true}, {"n": "Trasformazioni dei prodotti", "h": 1.8, "a": {"tec": 1}, "c": true}, {"n": "Economia, estimo, marketing e legislazione", "h": 1.8, "a": {"eco": 1}, "c": false}, {"n": "Genio rurale", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Biotecnologie agrarie e sicurezza alimentare", "h": 0.4, "a": {"sci": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si studiano coltivazioni, allevamenti e trasformazione dei prodotti in cibo di qualità, con molta pratica. Per chi ama la natura, il cibo e il territorio."}, {"id": "agraria-saa", "fam": "T", "nome": "Agraria – scienze agrarie e ambientali", "breve": "Agraria – sc. agrarie", "scuole": ["Luigi-Castiglioni-Limbiate"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Informatica e smart farming", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Agrobiologia", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Fondamenti di scienze agrarie", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Produzioni animali", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Produzioni vegetali", "h": 1.6, "a": {"tec": 1}, "c": true}, {"n": "Trasformazioni dei prodotti", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Economia, estimo, marketing e legislazione", "h": 1.6, "a": {"eco": 1}, "c": false}, {"n": "Genio rurale", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Gestione ambiente e territorio", "h": 1.0, "a": {"tec": 1}, "c": true}, {"n": "Biotecnologie agrarie e sicurezza alimentare", "h": 0.8, "a": {"sci": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Coltivazioni e allevamenti con un'attenzione particolare all'ambiente e alla gestione del territorio. Per chi vuole lavorare con la natura e proteggerla."}, {"id": "biotec-amb", "fam": "T", "nome": "Chimica, materiali e biotecnologie – biotecnologie ambientali", "breve": "Biotec. ambientali", "scuole": ["Albert-Einstein-Vimercate", "Enrico-Fermi-Desio"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.4, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Chimica applicata", "h": 1.6, "a": {"sci": 1}, "c": false}, {"n": "Chimica organica e biochimica", "h": 2.0, "a": {"sci": 1}, "c": false}, {"n": "Chimica analitica e strumentale", "h": 2.0, "a": {"sci": 1}, "c": true}, {"n": "Biologia, microbiologia, tecnologie di controllo ambientale", "h": 2.2, "a": {"sci": 1}, "c": true}, {"n": "Fisica ambientale", "h": 1.2, "a": {"fis": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Chimica, biologia e microbiologia per analizzare e proteggere aria, acqua e suolo, con tante ore di laboratorio. Per chi ama le scienze e l'ambiente."}, {"id": "biotec-san", "fam": "T", "nome": "Chimica, materiali e biotecnologie – biotecnologie sanitarie", "breve": "Biotec. sanitarie", "scuole": ["Albert-Einstein-Vimercate", "Pino-Hensemberger-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.4, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Chimica applicata", "h": 1.6, "a": {"sci": 1}, "c": false}, {"n": "Chimica organica e biochimica", "h": 2.0, "a": {"sci": 1}, "c": false}, {"n": "Igiene, anatomia e patologia", "h": 2.4, "a": {"sci": 1}, "c": true}, {"n": "Biologia, microbiologia, tecnologie di controllo sanitario", "h": 2.0, "a": {"sci": 1}, "c": true}, {"n": "Chimica analitica e strumentale", "h": 0.6, "a": {"sci": 1}, "c": false}, {"n": "Legislazione sanitaria", "h": 0.4, "a": {"eco": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Chimica, biologia, anatomia e igiene, con molto laboratorio. Prepara a lavorare nei laboratori di analisi o a proseguire in facoltà sanitarie e scientifiche."}, {"id": "chimica", "fam": "T", "nome": "Chimica, materiali e biotecnologie – chimica e materiali", "breve": "Chimica e materiali", "scuole": ["Enrico-Fermi-Desio"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.4, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Chimica applicata", "h": 1.6, "a": {"sci": 1}, "c": false}, {"n": "Tecnologie chimiche", "h": 2.2, "a": {"sci": 1}, "c": true}, {"n": "Chimica analitica", "h": 3.2, "a": {"sci": 1}, "c": true}, {"n": "Chimica organica", "h": 2.0, "a": {"sci": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Chimica analitica, organica e tecnologie chimiche, con molte ore di laboratorio. Per chi è curioso di come si trasformano e si controllano materiali e sostanze."}, {"id": "cat", "fam": "T", "nome": "Costruzioni, ambiente e territorio", "breve": "CAT", "scuole": ["Mose-Bianchi-Monza", "Ezio-Vanoni-Vimercate", "Primo-Levi-Seregno"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Fondamenti di progettazione edilizia e ambiente", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Fisica applicata alle strutture e all'ambiente", "h": 0.8, "a": {"fis": 1}, "c": false}, {"n": "Progettazione, edilizia, sostenibilità e sicurezza", "h": 3.6, "a": {"tec": 1}, "c": true}, {"n": "Salvaguardia, valorizzazione e valutazione dei beni e del territorio", "h": 1.8, "a": {"tec": 1}, "c": false}, {"n": "Rilievo e geomatica", "h": 2.0, "a": {"tec": 1}, "c": true}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si impara a progettare edifici, misurare il territorio e lavorare in sicurezza nei cantieri. Per chi immagina case e città e ama il disegno tecnico."}, {"id": "automazione", "fam": "T", "nome": "Elettronica ed elettrotecnica – automazione", "breve": "Automazione", "scuole": ["Leonardo-Da-Vinci-Carate-Brianza", "Albert-Einstein-Vimercate"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Fondamenti di elettrotecnica ed elettronica", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Elettrotecnica ed elettronica", "h": 2.6, "a": {"tec": 1}, "c": true}, {"n": "Sistemi automatici", "h": 2.2, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie e progettazione", "h": 2.2, "a": {"tec": 1}, "c": false}, {"n": "Complementi di matematica", "h": 0.4, "a": {"mat": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Elettronica, elettrotecnica e sistemi automatici per programmare macchine, robot e impianti industriali. Per chi ama la tecnologia e vuole far muovere le cose."}, {"id": "elettronica", "fam": "T", "nome": "Elettronica ed elettrotecnica – elettronica", "breve": "Elettronica", "scuole": ["Ettore-Majorana-Cesano-Maderno", "Enrico-Fermi-Desio"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Fondamenti di elettrotecnica ed elettronica", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Elettrotecnica ed elettronica", "h": 2.6, "a": {"tec": 1}, "c": true}, {"n": "Sistemi automatici", "h": 2.2, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie e progettazione", "h": 2.2, "a": {"tec": 1}, "c": false}, {"n": "Complementi di matematica", "h": 0.4, "a": {"mat": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Circuiti, dispositivi elettronici, sistemi automatici e programmazione, con molto laboratorio. Per chi vuole capire e costruire apparecchi elettronici."}, {"id": "elettrotecnica", "fam": "T", "nome": "Elettronica ed elettrotecnica – elettrotecnica", "breve": "Elettrotecnica", "scuole": ["Ettore-Majorana-Cesano-Maderno", "Enrico-Fermi-Desio", "Leonardo-Da-Vinci-Carate-Brianza", "Pino-Hensemberger-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Fondamenti di elettrotecnica ed elettronica", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Elettrotecnica ed elettronica", "h": 2.6, "a": {"tec": 1}, "c": true}, {"n": "Sistemi automatici", "h": 2.2, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie e progettazione", "h": 2.2, "a": {"tec": 1}, "c": false}, {"n": "Complementi di matematica", "h": 0.4, "a": {"mat": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Impianti elettrici, macchine elettriche ed energia, con progettazione e laboratorio. Per chi è interessato all'elettricità, agli impianti e alle fonti di energia."}, {"id": "grafica-com", "fam": "T", "nome": "Grafica e comunicazione", "breve": "Grafica e comunic.", "scuole": ["Enzo-Ferrari-Monza", "Giuseppe-Meroni-Lissone"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 1.2, "a": {"tec": 1}, "c": false}, {"n": "Laboratorio di tecnologie digitali", "h": 1.2, "a": {"inf": 1}, "c": false}, {"n": "Teoria e tecnica della comunicazione", "h": 1.6, "a": {"uma": 1}, "c": false}, {"n": "Progettazione multimediale", "h": 2.0, "a": {"art": 1}, "c": true}, {"n": "Tecnologie, organizzazione e gestione dei processi produttivi", "h": 2.0, "a": {"tec": 1}, "c": false}, {"n": "Laboratori tecnici", "h": 2.2, "a": {"art": 1}, "c": true}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Grafica, fotografia, video e stampa: si progetta la comunicazione visiva per carta, web e social. Per chi ama creare con il computer e le immagini."}, {"id": "informatica", "fam": "T", "nome": "Informatica e telecomunicazioni – informatica", "breve": "Informatica", "scuole": ["Albert-Einstein-Vimercate", "Ettore-Majorana-Cesano-Maderno", "Pino-Hensemberger-Monza", "Leonardo-Da-Vinci-Carate-Brianza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Storia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Matematica", "h": 3.8, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze integrate – scienze della Terra e biologia", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Scienze integrate – fisica", "h": 1.2, "a": {"fis": 1}, "c": false}, {"n": "Scienze integrate – chimica", "h": 1.2, "a": {"sci": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 1.2, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie informatiche", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Scienze e tecnologie applicate", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Sistemi e reti", "h": 2.4, "a": {"inf": 1}, "c": true}, {"n": "Tecnologie e progettazione di sistemi informatici e di telecomunicazioni", "h": 2.0, "a": {"inf": 1}, "c": false}, {"n": "Gestione progetto, organizzazione d'impresa", "h": 0.6, "a": {"eco": 1}, "c": false}, {"n": "Informatica", "h": 3.6, "a": {"inf": 1}, "c": true}, {"n": "Telecomunicazioni", "h": 1.2, "a": {"tec": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Programmazione, reti, sistemi e progettazione di software, con tante ore di laboratorio. Per chi ama il computer e vuole capire come funziona dall'interno."}, {"id": "telecom", "fam": "T", "nome": "Informatica e telecomunicazioni – telecomunicazioni", "breve": "Telecomunicazioni", "scuole": ["Pino-Hensemberger-Monza", "Ettore-Majorana-Cesano-Maderno"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 1.2, "a": {"tec": 1}, "c": false}, {"n": "Informatica e reti di comunicazione", "h": 1.6, "a": {"inf": 1}, "c": false}, {"n": "Sistemi e reti", "h": 1.6, "a": {"inf": 1}, "c": true}, {"n": "Tecnologie e progettazione di sistemi informatici e di telecomunicazioni", "h": 1.2, "a": {"inf": 1}, "c": false}, {"n": "Telecomunicazioni", "h": 3.4, "a": {"tec": 1}, "c": true}, {"n": "Informatica", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Complementi di matematica", "h": 0.4, "a": {"mat": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Reti di comunicazione, segnali, internet e dispositivi connessi, con laboratorio. Per chi è curioso di come viaggiano le informazioni."}, {"id": "energia", "fam": "T", "nome": "Meccanica, meccatronica ed energia – energia", "breve": "Energia", "scuole": ["Enrico-Fermi-Desio"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Fondamenti di meccanica ed elementi di disegno", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Elementi di elettrotecnica ed elettronica per la meccatronica", "h": 0.4, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie dei materiali", "h": 0.4, "a": {"tec": 1}, "c": false}, {"n": "Impianti, macchine e sistemi automatici per l'energia", "h": 3.4, "a": {"tec": 1}, "c": true}, {"n": "Gestione dei progetti, disegno e manutenzione di impianti", "h": 2.4, "a": {"tec": 1}, "c": true}, {"n": "Meccanica applicata alle macchine", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie dei materiali e tecniche di produzione", "h": 0.8, "a": {"tec": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Impianti, macchine ed energia: si progettano e si gestiscono impianti termici ed energetici. Per chi è interessato all'energia, all'ambiente e al risparmio energetico."}, {"id": "meccanica", "fam": "T", "nome": "Meccanica, meccatronica ed energia – meccanica e meccatronica", "breve": "Meccanica", "scuole": ["Leonardo-Da-Vinci-Carate-Brianza", "Enrico-Fermi-Desio", "Pino-Hensemberger-Monza"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Fondamenti di meccanica ed elementi di disegno", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Elementi di elettrotecnica ed elettronica per la meccatronica", "h": 0.4, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie dei materiali", "h": 0.4, "a": {"tec": 1}, "c": false}, {"n": "Meccanica, meccatronica e robotica industriale", "h": 3.4, "a": {"tec": 1}, "c": true}, {"n": "Tecniche di produzione e digitalizzazione del processo", "h": 2.4, "a": {"tec": 1}, "c": true}, {"n": "Organizzazione e manutenzione dei processi e dei sistemi produttivi", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Disegno, modellazione 3D e prototipazione", "h": 0.8, "a": {"tec": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Si progettano e si costruiscono pezzi, macchine e robot, con disegno 3D e officina. Per chi ama capire come funzionano i meccanismi e costruire."}, {"id": "moda", "fam": "T", "nome": "Sistema moda", "breve": "Sistema moda", "scuole": ["Primo-Levi-Seregno"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Laboratorio di tecniche creative per il tessile e la moda", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Tecnologie dei materiali e processi produttivi", "h": 2.4, "a": {"tec": 1}, "c": true}, {"n": "Ideazione e progettazione prodotti tessili e moda e laboratorio CAD", "h": 3.4, "a": {"art": 1}, "c": true}, {"n": "Chimica applicata, nobilitazione e sostenibilità dei prodotti tessili e moda", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Economia e marketing delle aziende della moda", "h": 0.8, "a": {"eco": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Ideazione e progettazione di capi e tessuti, materiali, produzione e marketing della moda. Per chi ama la moda e vuole conoscerne sia la creatività sia l'industria."}, {"id": "trasporti", "fam": "T", "nome": "Trasporti e logistica", "breve": "Trasporti e logistica", "scuole": ["Primo-Levi-Seregno"], "materie": [{"n": "Lingua italiana", "h": 3.8, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze sperimentali", "h": 1.8, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.6, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.6, "a": {"tec": 1}, "c": false}, {"n": "Scienze e tecnologie dei trasporti", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Logistica", "h": 2.8, "a": {"tec": 1}, "c": true}, {"n": "Struttura dei mezzi e delle infrastrutture di trasporto", "h": 1.4, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie e impianti di trasporto", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie digitali e sistemi informativi della logistica", "h": 1.2, "a": {"inf": 1}, "c": false}, {"n": "Diritto ed economia dei trasporti", "h": 1.2, "a": {"eco": 1}, "c": false}], "fonte": "La Bussola – Provincia di Monza e della Brianza", "desc": "Logistica, mezzi di trasporto e organizzazione degli spostamenti di merci e persone. Per chi è curioso di come si muove il mondo: porti, aeroporti, magazzini."}, {"id": "servizi-commerciali", "fam": "P", "nome": "Servizi commerciali", "breve": "Serv. commerciali", "scuole": ["Giuseppe-Meroni-Lissone", "Lorenzo-Milani-Meda-Seveso", "Istituto-Professionale-Commerciale-Caravaggio-Monza"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 3.2, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Scienze integrate – fisica", "h": 0.4, "a": {"fis": 1}, "c": false}, {"n": "Scienze integrate – scienze naturali", "h": 0.4, "a": {"sci": 1}, "c": false}, {"n": "Tecnica professionale dei servizi commerciali", "h": 7.8, "a": {"eco": 1}, "c": true}, {"n": "Seconda lingua", "h": 3.4, "a": {"lin": 1}, "c": false}, {"n": "Tecniche di comunicazione", "h": 1.2, "a": {"uma": 1}, "c": false}], "fonte": "IIS Floriani – Vimercate (indirizzo generale)", "desc": "Molta pratica sulle attività di un'azienda: amministrazione, vendita, marketing e comunicazione, con due lingue. Prepara a lavorare presto in uffici e negozi."}, {"id": "sc-promozione", "fam": "P", "nome": "Servizi commerciali – promozione commerciale e pubblicitaria", "breve": "Serv. comm. – pubblicità", "scuole": ["Floriani-Vimercate"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Scienze integrate – fisica", "h": 0.4, "a": {"fis": 1}, "c": false}, {"n": "Scienze integrate – scienze naturali", "h": 0.4, "a": {"sci": 1}, "c": false}, {"n": "Tecnica professionale dei servizi commerciali e pubblicitari", "h": 7.8, "a": {"eco": 1}, "c": true}, {"n": "Seconda lingua", "h": 3.0, "a": {"lin": 1}, "c": false}, {"n": "Economia aziendale", "h": 1.2, "a": {"eco": 1}, "c": false}, {"n": "Laboratorio di espressione grafico-artistica", "h": 1.6, "a": {"art": 1}, "c": false}, {"n": "Tecniche di comunicazione e relazione", "h": 1.2, "a": {"uma": 1}, "c": false}], "fonte": "IIS Floriani – Vimercate", "desc": "Servizi commerciali con un taglio creativo: pubblicità, grafica e promozione dei prodotti. Per chi unisce l'interesse per le aziende alla creatività."}, {"id": "agricoltura", "fam": "P", "nome": "Agricoltura, sviluppo rurale, valorizzazione dei prodotti del territorio e gestione delle risorse forestali e montane", "breve": "Agricoltura (prof.)", "scuole": ["Luigi-Castiglioni-Limbiate"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia e geografia", "h": 0.8, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze integrate – chimica", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Scienze integrate – biologia", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Ecologia e pedologia", "h": 1.6, "a": {"sci": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Laboratorio di scienze e tecnologie agrarie", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Laboratorio di chimica e trasformazione", "h": 1.2, "a": {"sci": 1}, "c": false}, {"n": "Agronomia", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Economia agraria ed estimo", "h": 2.2, "a": {"eco": 1}, "c": true}, {"n": "Produzioni vegetali e zootecniche", "h": 1.8, "a": {"tec": 1}, "c": true}, {"n": "Valorizzazione delle attività produttive", "h": 1.8, "a": {"eco": 1}, "c": false}, {"n": "Assestamento forestale e gestione parchi", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Agricoltura sostenibile e biologica", "h": 1.4, "a": {"tec": 1}, "c": false}], "fonte": "IIS Castiglioni – Limbiate", "desc": "Coltivazioni, allevamenti, boschi e prodotti del territorio, con tanta pratica nell'azienda agraria. Prepara a lavorare in agricoltura e nella tutela del territorio."}, {"id": "enogastronomia", "fam": "P", "nome": "Enogastronomia e ospitalità alberghiera", "breve": "Enogastronomia", "scuole": ["Adriano-Olivetti-Monza", "Don-Carlo-Gnocchi-Carate-Brianza", "Collegio-Arcivescovile-Ballerini-Seregno"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Inglese tecnico", "h": 0.6, "a": {"lin": 1}, "c": false}, {"n": "Storia e geografia", "h": 0.8, "a": {"ita": 1}, "c": false}, {"n": "Storia", "h": 1.2, "a": {"ita": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Seconda lingua", "h": 2.6, "a": {"lin": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Laboratorio di sala, bar e vendita", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Laboratorio di accoglienza turistica", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Scienze degli alimenti", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Biologia", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Scienza e cultura dell'alimentazione", "h": 2.8, "a": {"sci": 1}, "c": true}, {"n": "Laboratorio di enogastronomia – cucina", "h": 3.4, "a": {"tec": 1}, "c": true}, {"n": "Diritto e tecniche amministrative", "h": 2.2, "a": {"eco": 1}, "c": false}], "fonte": "IPSSEOA Olivetti – Monza (articolazione enogastronomia)", "desc": "Cucina, sala, bar e accoglienza, con laboratori professionali e stage in ristoranti e hotel. Per chi ama cucinare e stare a contatto con le persone."}, {"id": "made-in-italy-prof", "fam": "P", "nome": "Industria e artigianato per il Made in Italy", "breve": "Made in Italy (prof.)", "scuole": ["Enzo-Ferrari-Monza", "Giuseppe-Meroni-Lissone", "Floriani-Vimercate"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze integrate – fisica", "h": 0.8, "a": {"fis": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie, disegno e progettazione", "h": 1.6, "a": {"tec": 1}, "c": false}, {"n": "Laboratori tecnologici ed esercitazioni", "h": 6.0, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie applicate ai materiali e ai processi produttivi", "h": 2.4, "a": {"tec": 1}, "c": false}, {"n": "Progettazione e produzione", "h": 3.0, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie elettrico-elettroniche e applicazioni", "h": 1.8, "a": {"tec": 1}, "c": false}], "fonte": "IIS Floriani – Vimercate (declinazione meccanica)", "desc": "Si impara a progettare e realizzare prodotti nei laboratori (meccanica, legno e arredo, a seconda della scuola). Per chi ama lavorare con le mani e la tecnologia."}, {"id": "manutenzione", "fam": "P", "nome": "Manutenzione e assistenza tecnica", "breve": "Manutenzione", "scuole": ["Floriani-Vimercate", "Enzo-Ferrari-Monza"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze integrate – chimica", "h": 0.8, "a": {"sci": 1}, "c": false}, {"n": "Scienze integrate – fisica", "h": 0.8, "a": {"fis": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Tecnologie e tecniche di rappresentazione grafica", "h": 0.8, "a": {"tec": 1}, "c": false}, {"n": "Laboratori tecnologici ed esercitazioni", "h": 5.4, "a": {"tec": 1}, "c": true}, {"n": "Tecnologie meccaniche e applicazioni", "h": 2.6, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie elettrico-elettroniche dell'automazione e applicazioni", "h": 2.4, "a": {"tec": 1}, "c": false}, {"n": "Tecnologie e tecniche di installazione e di manutenzione", "h": 2.8, "a": {"tec": 1}, "c": true}], "fonte": "IIS Floriani – Vimercate", "desc": "Si impara a installare, controllare e riparare impianti, macchine e apparecchi, con molto laboratorio. Per chi ama smontare, capire e aggiustare."}, {"id": "odontotecnico", "fam": "P", "nome": "Arti ausiliarie delle professioni sanitarie: odontotecnico", "breve": "Odontotecnico", "scuole": ["M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza"], "materie": [{"n": "Lingua e letteratura italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Storia", "h": 1.6, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.4, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Scienze motorie e sportive", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze integrate", "h": 1.2, "a": {"fis": 0.3333333333333333, "sci": 0.6666666666666666}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Anatomia, fisiologia, igiene", "h": 1.2, "a": {"sci": 1}, "c": false}, {"n": "Gnatologia", "h": 1.2, "a": {"sci": 1}, "c": false}, {"n": "Scienze dei materiali dentali e laboratorio", "h": 2.8, "a": {"sci": 1}, "c": true}, {"n": "Rappresentazione e modellazione odontotecnica", "h": 2.8, "a": {"tec": 1}, "c": false}, {"n": "Diritto e legislazione socio-sanitaria", "h": 0.4, "a": {"eco": 1}, "c": false}, {"n": "Esercitazioni di laboratorio di odontotecnica", "h": 6.0, "a": {"tec": 1}, "c": true}], "fonte": "IIS Gandhi – Besana in Brianza", "desc": "Si progettano e si realizzano protesi dentarie in laboratorio, a mano e con il digitale. Per chi è preciso, paziente e ama i lavori manuali di precisione."}, {"id": "servizi-culturali", "fam": "P", "nome": "Servizi culturali e dello spettacolo", "breve": "Servizi culturali", "scuole": ["Enzo-Ferrari-Monza"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Storia", "h": 1.6, "a": {"ita": 1}, "c": false}, {"n": "Geografia", "h": 0.4, "a": {"ita": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Scienze integrate (chimica e fisica)", "h": 0.8, "a": {"fis": 0.5, "sci": 0.5}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Laboratori tecnologici ed esercitazioni di fotografia e audiovisivo", "h": 5.0, "a": {"art": 1}, "c": false}, {"n": "Comunicazione visiva", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Linguaggi fotografici e audiovisivi", "h": 0.8, "a": {"art": 1}, "c": false}, {"n": "Tecnologie di fotografia e audiovisivo", "h": 1.8, "a": {"tec": 1}, "c": false}, {"n": "Progettazione del prodotto fotografico e audiovisivo", "h": 3.0, "a": {"art": 1}, "c": true}, {"n": "Storia delle arti visive", "h": 1.2, "a": {"art": 1}, "c": false}, {"n": "Linguaggi e tecniche di fotografia e audiovisivo", "h": 1.8, "a": {"art": 1}, "c": true}], "fonte": "IIS Enzo Ferrari – Monza", "desc": "Fotografia, video, comunicazione visiva e organizzazione di eventi culturali, con molti laboratori. Per chi vuole lavorare nel mondo dello spettacolo e dei media."}, {"id": "sanita", "fam": "P", "nome": "Servizi per la sanità e l'assistenza sociale", "breve": "Sanità e sociale", "scuole": ["Floriani-Vimercate", "Lorenzo-Milani-Meda-Seveso", "Istituto-Leone-Dehon-Monza"], "materie": [{"n": "Lingua italiana", "h": 4.0, "a": {"ita": 1}, "c": false}, {"n": "Storia e geografia", "h": 2.0, "a": {"ita": 1}, "c": false}, {"n": "Lingua inglese", "h": 2.4, "a": {"lin": 1}, "c": false}, {"n": "Matematica", "h": 3.4, "a": {"mat": 1}, "c": false}, {"n": "Diritto ed economia", "h": 0.8, "a": {"eco": 1}, "c": false}, {"n": "Scienze motorie", "h": 2.0, "a": {"spo": 1}, "c": false}, {"n": "Tecnologie dell'informazione e della comunicazione", "h": 0.8, "a": {"inf": 1}, "c": false}, {"n": "Scienze integrate – fisica", "h": 0.4, "a": {"fis": 1}, "c": false}, {"n": "Scienze integrate – chimica", "h": 0.4, "a": {"sci": 1}, "c": false}, {"n": "Scienze umane e sociali", "h": 1.4, "a": {"uma": 1}, "c": false}, {"n": "Psicologia generale applicata", "h": 2.8, "a": {"uma": 1}, "c": true}, {"n": "Metodologie operative", "h": 3.2, "a": {"uma": 1}, "c": false}, {"n": "Seconda lingua", "h": 2.2, "a": {"lin": 1}, "c": false}, {"n": "Igiene e cultura medico-sanitaria", "h": 2.8, "a": {"sci": 1}, "c": true}, {"n": "Legislazione sanitaria", "h": 1.6, "a": {"eco": 1}, "c": false}, {"n": "Tecnica amministrativa", "h": 0.8, "a": {"eco": 1}, "c": false}], "fonte": "IIS Floriani – Vimercate", "desc": "Psicologia, igiene e metodi di lavoro in ambito sociale e sanitario: si impara ad aiutare bambini, anziani e persone fragili. Per chi ama prendersi cura degli altri."}], "scuole": {"Achille-Mapelli-Monza": "Achille Mapelli – Monza", "Albert-Einstein-Vimercate": "Albert Einstein – Vimercate", "Amedeo-Modigliani-Giussano": "Amedeo Modigliani – Giussano", "Antonio-Banfi-Vimercate": "Antonio Banfi – Vimercate", "Bartolomeo-Zucchi-Monza": "Bartolomeo Zucchi – Monza", "Carlo-Porta-Monza": "Carlo Porta – Monza", "Collegio-Arcivescovile-Ballerini-Seregno": "Collegio arcivescovile Ballerini – Seregno", "Collegio-Bianconi-Monza": "Collegio Bianconi – Monza", "Collegio-Della-Guastalla-Monza": "Collegio della Guastalla – Monza", "Collegio-S.Antonio-Busnago": "Collegio S. Antonio – Busnago", "Collegio-Villoresi-San-Giuseppe-Monza": "Collegio Villoresi San Giuseppe – Monza", "Don-Carlo-Gnocchi-Carate-Brianza": "Don Carlo Gnocchi – Carate Brianza", "Enrico-Fermi-Desio": "Enrico Fermi – Desio", "Ettore-Majorana-Cesano-Maderno": "Ettore Majorana – Cesano Maderno", "Ettore-Majorana-Desio": "Ettore Majorana – Desio", "Europa-Unita-Lissone": "Europa Unita – Lissone", "Ezio-Vanoni-Vimercate": "Ezio Vanoni – Vimercate", "Floriani-Vimercate": "Floriani – Vimercate", "Giuseppe-Meroni-Lissone": "Giuseppe Meroni – Lissone", "Giuseppe-Parini-Seregno": "Giuseppe Parini – Seregno", "Iris-Versari-Cesano-Maderno": "Iris Versari – Cesano Maderno", "Istituto-Europeo-Marcello-Candia-Seregno": "Istituto europeo Marcello Candia – Seregno", "Istituto-Leone-Dehon-Monza": "Istituto Leone Dehon – Monza", "Istituto-Maddalena-di-Canossa-Monza": "Istituto Maddalena di Canossa – Monza", "Istituto-Paci-Seregno": "Istituto Paci – Seregno", "Leonardo-Da-Vinci-Carate-Brianza": "Leonardo da Vinci – Carate Brianza", "M.-K.-Gandhi-Villa-Raverio-di-Besana-Brianza": "M. K. Gandhi – Villa Raverio di Besana Brianza", "M.L.-King-Muggio": "M. L. King – Muggiò", "Marie-Curie-Meda": "Marie Curie – Meda", "Martino-Bassi-Seregno": "Martino Bassi – Seregno", "Mose-Bianchi-Monza": "Mosè Bianchi – Monza", "Nanni-Valentini-Monza": "Nanni Valentini – Monza", "Paolo-Frisi-Monza": "Paolo Frisi – Monza", "Pino-Hensemberger-Monza": "Pino Hensemberger – Monza", "Preziosissimo-Sangue-Monza": "Preziosissimo Sangue – Monza", "Primo-Levi-Seregno": "Primo Levi – Seregno", "Elsa-Morante-Limbiate": "Elsa Morante – Limbiate", "Enzo-Ferrari-Monza": "Enzo Ferrari – Monza", "Istituto-San-Carlo-Borromeo-Monza": "Istituto San Carlo Borromeo – Monza", "Luigi-Castiglioni-Limbiate": "Luigi Castiglioni – Limbiate", "Adriano-Olivetti-Monza": "Adriano Olivetti – Monza", "Istituto-Professionale-Commerciale-Caravaggio-Monza": "Istituto professionale commerciale Caravaggio – Monza", "Lorenzo-Milani-Meda-Seveso": "Lorenzo Milani – Meda e Seveso"}};
+
+/* ---------- Aree, famiglie, materie del questionario ---------- */
+const AREE = [
+  ['ita','Italiano, storia e geografia'],['cla','Latino e greco'],['lin','Lingue straniere'],
+  ['mat','Matematica'],['fis','Fisica'],['sci','Scienze, chimica e biologia'],['inf','Informatica'],
+  ['tec','Discipline tecniche e tecnologiche'],['eco','Economia e diritto'],['fil','Filosofia'],
+  ['uma','Scienze umane e comunicazione'],['art','Arte, disegno e progettazione artistica'],
+  ['mus','Musica'],['spo','Sport']
+];
+const AK = AREE.map(a=>a[0]);
+const AREA_NAME = Object.fromEntries(AREE);
+const FAM = {
+  L:{n:'Licei',c:'#4C6EF5'}, E:{n:'Tecnici economici',c:'#F08C00'},
+  T:{n:'Tecnici tecnologici',c:'#0CA678'}, P:{n:'Professionali',c:'#D6336C'},
+  U:{n:'Tu',c:'#FF6B57'}
+};
+const FAMS = ['L','E','T','P'].filter(f=>DATA.nodi.some(n=>n.fam===f));
+// peso: materie delle medie 1, materie solo delle superiori 0,5
+const GRUPPI = {m:{t:'Materie che studi alle medie',p:1}, s:{t:'Materie che troverai solo alle superiori',p:0.5}};
+const MATERIE = [
+  {id:'ita',g:'m',n:'Italiano',a:{ita:1}},
+  {id:'sto',g:'m',n:'Storia',a:{ita:1}},
+  {id:'geo',g:'m',n:'Geografia',a:{ita:1}},
+  {id:'mat',g:'m',n:'Matematica',a:{mat:1}},
+  {id:'sci',g:'m',n:'Scienze',a:{sci:0.75,fis:0.25}},
+  {id:'tec',g:'m',n:'Tecnologia',a:{tec:0.5,inf:0.5}},
+  {id:'ing',g:'m',n:'Inglese',a:{lin:1}},
+  {id:'l2',g:'m',n:'Seconda lingua',a:{lin:1}},
+  {id:'art',g:'m',n:'Arte e immagine',a:{art:1}},
+  {id:'mus',g:'m',n:'Musica',a:{mus:1}},
+  {id:'edf',g:'m',n:'Educazione fisica',a:{spo:1}},
+  {id:'lat',g:'s',n:'Latino',d:'La lingua degli antichi Romani: grammatica, traduzione e cultura.',a:{cla:1}},
+  {id:'gre',g:'s',n:'Greco antico',d:'La lingua e la cultura dell\'antica Grecia, con un nuovo alfabeto.',a:{cla:1}},
+  {id:'fil',g:'s',n:'Filosofia',d:'Le grandi domande sulla vita e su come ragioniamo.',a:{fil:1}},
+  {id:'dir',g:'s',n:'Diritto ed economia',d:'Come funzionano leggi, aziende, soldi e mercati.',a:{eco:1}},
+  {id:'inf',g:'s',n:'Informatica e programmazione',d:'Scrivere programmi e app, capire computer e reti.',a:{inf:1}},
+  {id:'ele',g:'s',n:'Elettronica e meccanica',d:'Progettare e costruire macchine, circuiti, impianti e robot.',a:{tec:1}},
+  {id:'chi',g:'s',n:'Chimica',d:'Di che cosa è fatta la materia e come si trasforma.',a:{sci:1}},
+  {id:'fis',g:'s',n:'Fisica',d:'Le leggi di movimento, energia, luce ed elettricità.',a:{fis:1}},
+  {id:'psi',g:'s',n:'Psicologia e scienze umane',d:'Come pensano, imparano e si comportano persone e gruppi.',a:{uma:1}},
+  {id:'des',g:'s',n:'Design e progettazione',d:'Ideare oggetti, spazi e grafiche, a mano e al computer.',a:{art:1}},
+  {id:'ali',g:'s',n:'Scienze dell\'alimentazione',d:'Che cosa contengono i cibi e come nutrirsi bene.',a:{sci:1}},
+  {id:'log',g:'s',n:'Logistica e trasporti',d:'Organizzare come si spostano merci e persone nel mondo.',a:{tec:1}}
+];
+const fmt = x => (Math.round(x*10)/10).toString().replace('.',',');
+const pct = s => Math.round(s*100);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Stato (salvato solo in questo browser) ---------- */
+const KEY='mappa-indirizzi-mb-v3';
+const ORIGCAR={}; DATA.nodi.forEach(n=>ORIGCAR[n.id]=n.materie.map(m=>m.c));
+let weights=AK.map(()=>1), bonus=1.2, K=3;
+let answers=Object.fromEntries(MATERIE.map(m=>[m.id,null]));   // null = «Non lo so»
+let tuOn=false, step=0, school='', selected=null, hovered=null;
+const showFam={}; FAMS.forEach(f=>showFam[f]=true);
+const nodes=DATA.nodi.map(n=>Object.assign(n,{x:0,y:0,vx:0,vy:0,fx:null,fy:null}));
+const tuNode={id:'tu',fam:'U',nome:'Tu',breve:'Tu',x:0,y:0,vx:0,vy:0,fx:null,fy:null};
+try{
+  const s=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(s){
+    if(s.weights&&s.weights.length===AK.length) weights=s.weights;
+    if(s.bonus) bonus=s.bonus; if(s.k) K=s.k;
+    if(s.answers) for(const k in answers) if(k in s.answers) answers[k]=s.answers[k];
+    if(s.car) nodes.forEach(n=>{const c=s.car[n.id]; if(c&&c.length===n.materie.length) n.materie.forEach((m,i)=>m.c=c[i]);});
+  }
+}catch(e){}
+const isEdited=n=>n.materie.some((m,i)=>m.c!==ORIGCAR[n.id][i]);
+function save(){
+  try{ const car={}; nodes.forEach(n=>{if(isEdited(n)) car[n.id]=n.materie.map(m=>m.c);});
+       localStorage.setItem(KEY,JSON.stringify({weights,bonus,k:K,answers,car})); }catch(e){}
+}
+
+/* ---------- Profili e similarità ---------- */
+function areaHours(n){
+  const v=AK.map(()=>0);
+  n.materie.forEach(m=>{ for(const a in m.a) v[AK.indexOf(a)] += m.h*m.a[a]*(m.c?bonus:1); });
+  return v;
+}
+// Profilo dello studente: per ogni area, media pesata dei voti delle materie collegate
+// (materie delle medie peso 1, materie delle superiori peso 0,5). Nelle aree fatte solo di materie
+// delle superiori il voto conta la metà: si fa la media tra il voto e la media generale dello studente.
+// «Non lo so» esclude la materia; un'area senza risposte non entra nel confronto (maschera).
+function tuProfile(){
+  const vals=MATERIE.map(m=>answers[m.id]).filter(x=>x!==null);
+  const mean=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
+  const num=AK.map(()=>0), den=AK.map(()=>0), med=AK.map(()=>false);
+  MATERIE.forEach(m=>{ const r=answers[m.id]; if(r===null) return; const w=GRUPPI[m.g].p;
+    for(const a in m.a){ const i=AK.indexOf(a); num[i]+=w*m.a[a]*r; den[i]+=w*m.a[a]; if(m.g==='m') med[i]=true; } });
+  const v=AK.map((_,i)=> den[i] ? (med[i] ? num[i]/den[i] : 0.5*num[i]/den[i]+0.5*mean) : 0);
+  const mask=AK.map((_,i)=>den[i]>0);
+  return {v,mask};
+}
+function hasProfile(){
+  const {v,mask}=tuProfile(); const k=v.filter((_,i)=>mask[i]);
+  return k.length>=3 && Math.max(...k)>Math.min(...k);
+}
+// Affinità studente-indirizzo: correlazione (pesata per area) tra i voti dello studente e le ore
+// dell'indirizzo nelle aree note, portata tra 0 e 1, moltiplicata per la radice della quota di ore
+// dell'indirizzo che cade in aree note (più prudenza se l'indirizzo dipende da aree che lo studente non conosce).
+function affinity(n){
+  const {v,mask}=tuProfile(), h=areaHours(n);
+  let sw=0,mx=0,my=0; for(let i=0;i<AK.length;i++) if(mask[i]){ sw+=weights[i]; mx+=weights[i]*v[i]; my+=weights[i]*h[i]; }
+  if(!sw) return 0; mx/=sw; my/=sw;
+  let sxy=0,sxx=0,syy=0; for(let i=0;i<AK.length;i++) if(mask[i]){ const w=weights[i]; sxy+=w*(v[i]-mx)*(h[i]-my); sxx+=w*(v[i]-mx)**2; syy+=w*(h[i]-my)**2; }
+  const r=(sxx&&syy)?sxy/Math.sqrt(sxx*syy):0;
+  const tot=h.reduce((a,b)=>a+b,0), cov=tot?h.reduce((a,x,i)=>a+(mask[i]?x:0),0)/tot:0;
+  return (r+1)/2*Math.sqrt(cov);
+}
+function sim(a,b,mask){
+  let s=0,na=0,nb=0;
+  for(let i=0;i<AK.length;i++){ if(mask&&!mask[i]) continue; const w=weights[i]; s+=w*a[i]*b[i]; na+=w*a[i]*a[i]; nb+=w*b[i]*b[i]; }
+  return (na&&nb)?s/Math.sqrt(na*nb):0;
+}
+function simNodes(a,b){
+  if(a.fam==='U') return affinity(b);
+  if(b.fam==='U') return affinity(a);
+  return sim(areaHours(a),areaHours(b));
+}
+function ranking(t,pool){ return pool.filter(n=>n!==t).map(n=>({n,s:simNodes(t,n)})).sort((a,b)=>b.s-a.s); }
+
+/* ---------- Questionario ---------- */
+const STEPS=['m','s'];
+function renderHow(){
+  document.getElementById('how').innerHTML=`<p class="hint">Per ogni indirizzo conosciamo le ore settimanali di ogni materia, raggruppate in 14 aree. Le tue risposte vengono tradotte nelle stesse aree (tabella qui sotto): per ogni area facciamo la media dei tuoi voti, e le materie delle superiori contano la metà perché non le hai ancora studiate. Poi guardiamo quali indirizzi dedicano più ore proprio alle aree che ti piacciono di più. Le materie a cui rispondi «Non lo so» non vengono usate; se un indirizzo dipende molto da aree che non conosci, la sua affinità viene calcolata con più prudenza.</p>
+  <table class="map">${MATERIE.map(m=>`<tr><td>${m.n}${m.g==='s'?' <small>(×0,5)</small>':''}</td><td>${Object.entries(m.a).map(([a,f])=>(f<1?(f*100)+'% ':'')+AREA_NAME[a]).join(' + ')}</td></tr>`).join('')}</table>`;
+}
+function renderStep(){
+  const g=STEPS[step], list=MATERIE.filter(m=>m.g===g);
+  document.getElementById('step-label').textContent=`Passo ${step+1} di ${STEPS.length}`;
+  document.getElementById('step-bar').style.width=((step+1)/STEPS.length*100)+'%';
+  const card=document.getElementById('step-card');
+  card.innerHTML=`<h2>${GRUPPI[g].t}</h2><p class="legend-scale">0 = per niente · 5 = moltissimo</p>`+
+    list.map(m=>`<div class="subj"><div class="name">${m.n}</div>${m.d?`<div class="desc">${m.d}</div>`:''}
+      <div class="scale" data-id="${m.id}"><button class="ns${answers[m.id]===null?' on':''}" data-v="ns">Non lo so</button>${[0,1,2,3,4,5].map(v=>`<button data-v="${v}" class="${answers[m.id]===v?'on':''}" aria-label="${m.n}: ${v}">${v}</button>`).join('')}</div></div>`).join('');
+  card.querySelectorAll('.scale button').forEach(b=>b.onclick=()=>{
+    const id=b.parentElement.dataset.id; answers[id]= b.dataset.v==='ns'?null:+b.dataset.v;
+    b.parentElement.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    document.getElementById('quiz-msg').textContent=''; save();
+  });
+  document.getElementById('prev').style.visibility = step===0?'hidden':'visible';
+  const next=document.getElementById('next');
+  if(step===STEPS.length-1){ next.textContent='Mostra la mia mappa'; next.classList.add('cta'); }
+  else { next.textContent='Avanti →'; next.classList.remove('cta'); }
+}
+document.getElementById('prev').onclick=()=>{ if(step>0){step--;renderStep();document.getElementById('quiz').scrollTop=0;} };
+document.getElementById('next').onclick=()=>{
+  if(step<STEPS.length-1){ step++; renderStep(); document.getElementById('quiz').scrollTop=0; return; }
+  if(!hasProfile()){ document.getElementById('quiz-msg').textContent='Rispondi ad almeno qualche materia e dai voti diversi tra loro: servono per capire che cosa ti piace di più.'; return; }
+  tuOn=true; tuNode.x=W/2; tuNode.y=H/2; showView('mapview'); showTab('res'); document.getElementById('mapview').scrollTop=0;
+};
+
+/* ---------- Grafo ---------- */
+const svg=document.getElementById('graph'), vp=document.getElementById('vp');
+const NS='http://www.w3.org/2000/svg';
+let topPad=64,act=[],T=[],links=[],nbrs=new Map(),W=800,H=600,alpha=1,running=false,linkEls=[],nodeEls=[];
+let view={k:1,x:0,y:0};
+const el=(tag,at={})=>{const e=document.createElementNS(NS,tag); for(const k in at) e.setAttribute(k,at[k]); return e;};
+function measure(){ const r=svg.getBoundingClientRect(); W=r.width||800; H=r.height||600; svg.setAttribute('viewBox',`0 0 ${W} ${H}`); const tb=document.getElementById('toolbar'); topPad=Math.max(40,(tb?tb.offsetHeight:40)+26); }
+function placeInitial(){
+  measure();
+  nodes.forEach(n=>{ const fi=FAMS.indexOf(n.fam), a=fi/FAMS.length*Math.PI*2+(Math.random()-.5)*1.4, r=Math.min(W,H)*(.2+Math.random()*.15);
+    n.x=W/2+Math.cos(a)*r; n.y=H/2+Math.sin(a)*r; n.vx=n.vy=0; });
+  tuNode.x=W/2; tuNode.y=H/2;
+}
+function applyView(){ vp.setAttribute('transform',`translate(${view.x},${view.y}) scale(${view.k})`); }
+function nodeRadius(n, affinity){
+  if(n.fam==='U') return 14;
+  if(affinity){ const v=affinity.get(n); return 5+11*Math.pow(v,1.5); }
+  return Math.max(7,Math.min(13,6+n.scuole.length*0.45));
+}
+function rebuild(){
+  act=nodes.filter(n=>showFam[n.fam]);
+  if(tuOn&&hasProfile()) act.push(tuNode);
+  if(selected&&!act.includes(selected)) selected=null;
+  const n=act.length;
+  const S=act.map((a,i)=>act.map((b,j)=>i===j?1:simNodes(a,b)));
+  // l'affinità dello studente è su una scala diversa dalla somiglianza tra indirizzi:
+  // la riporto sulla stessa scala (per rango) così «Tu» si colloca vicino agli indirizzi più affini
+  const ti=act.indexOf(tuNode);
+  if(ti>=0){
+    const nn=[]; for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) if(i!==ti&&j!==ti) nn.push(S[i][j]);
+    nn.sort((a,b)=>a-b); const lo=nn[Math.floor(nn.length*0.05)], hi=nn[Math.floor(nn.length*0.97)];
+    const av=act.map((_,j)=>j===ti?null:S[ti][j]).filter(x=>x!==null), amin=Math.min(...av), amax=Math.max(...av);
+    for(let j=0;j<n;j++) if(j!==ti){ const s=lo+(S[ti][j]-amin)/((amax-amin)||1)*(hi-lo); S[ti][j]=S[j][ti]=s; }
+  }
+  let dmin=Infinity,dmax=-Infinity;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const d=1-S[i][j]; if(d<dmin)dmin=d; if(d>dmax)dmax=d; }
+  const span=Math.min(W,H-topPad)*0.8, base=40;
+  T=act.map((a,i)=>act.map((b,j)=>base+span*((1-S[i][j])-dmin)/((dmax-dmin)||1)));
+  const keys=new Map();
+  act.forEach((a,i)=>{
+    const c=act.map((b,j)=>({j,s:S[i][j]})).filter(o=>o.j!==i&&(a.fam==='U'||act[o.j].fam!=='U')).sort((x,y)=>y.s-x.s);
+    c.slice(0,K).forEach(o=>{const k=Math.min(i,o.j)+'-'+Math.max(i,o.j); if(!keys.has(k)) keys.set(k,{i:Math.min(i,o.j),j:Math.max(i,o.j),s:o.s});});
+  });
+  links=[...keys.values()];
+  nbrs=new Map(act.map(a=>[a,new Set()]));
+  links.forEach(l=>{nbrs.get(act[l.i]).add(act[l.j]); nbrs.get(act[l.j]).add(act[l.i]);});
+  // affinità normalizzata per la grandezza dei nodi
+  let affinity=null;
+  if(act.includes(tuNode)){
+    const r=ranking(tuNode,act); const mx=r[0].s, mn=r[r.length-1].s;
+    affinity=new Map(r.map(o=>[o.n,(o.s-mn)/((mx-mn)||1)]));
+  }
+  draw(affinity); reheat(0.8);
+}
+function draw(affinity){
+  vp.innerHTML='';
+  const gL=el('g'),gN=el('g'); vp.append(gL,gN);
+  const ss=links.map(l=>l.s),smin=Math.min(...ss),smax=Math.max(...ss);
+  linkEls=links.map(l=>{const tu=act[l.i].fam==='U'||act[l.j].fam==='U';
+    const e=el('line',{class:'link'+(tu?' tu':'')}); e.style.strokeWidth=tu?'2':(0.8+2.6*((l.s-smin)/((smax-smin)||1))).toFixed(2); gL.append(e); return e;});
+  nodeEls=act.map(n=>{
+    const g=el('g',{class:'node'+(n.fam==='U'?' tu':'')});
+    const r=nodeRadius(n,affinity);
+    const c=el('circle',{r:r.toFixed(1),fill:FAM[n.fam].c});
+    const t=el('text',{y:(-r-5).toFixed(1),'text-anchor':'middle'}); t.textContent=n.breve;
+    const ti=el('title'); ti.textContent=n.fam==='U'?'Il tuo profilo':n.nome;
+    g.append(ti,c,t);
+    g.addEventListener('pointerdown',e=>startDrag(e,n));
+    g.addEventListener('pointerenter',e=>{ if(e.pointerType==='mouse'&&!drag){hovered=n;highlight();} });
+    g.addEventListener('pointerleave',()=>{ if(hovered===n){hovered=null;highlight();} });
+    gN.append(g); return g;
+  });
+  highlight(); paint();
+}
+function highlight(){
+  const h=hovered||selected, nb=h?nbrs.get(h):null;
+  act.forEach((n,i)=>{ const g=nodeEls[i]; g.classList.toggle('sel',n===selected);
+    const inSchool=school&&n.scuole&&n.scuole.includes(school); g.classList.toggle('school',!!inSchool);
+    let dim=false; if(h) dim=n!==h&&!nb.has(n); else if(school) dim=!inSchool&&n.fam!=='U';
+    g.classList.toggle('dim',dim); });
+  links.forEach((l,k)=>{ const touch=h&&(act[l.i]===h||act[l.j]===h);
+    linkEls[k].classList.toggle('hi',!!touch); linkEls[k].classList.toggle('dim',(!!h&&!touch)||(!h&&!!school)); });
+}
+function paint(){
+  links.forEach((l,k)=>{const a=act[l.i],b=act[l.j],e=linkEls[k];
+    e.setAttribute('x1',a.x.toFixed(1));e.setAttribute('y1',a.y.toFixed(1));e.setAttribute('x2',b.x.toFixed(1));e.setAttribute('y2',b.y.toFixed(1));});
+  act.forEach((n,i)=>nodeEls[i].setAttribute('transform',`translate(${n.x.toFixed(1)},${n.y.toFixed(1)})`));
+}
+function tick(){
+  const n=act.length;
+  for(let i=0;i<n;i++){const a=act[i]; for(let j=i+1;j<n;j++){const b=act[j];
+    let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||0.01; const t=T[i][j],w=Math.min(1,90/t);
+    let f=(d-t)/d*0.06*w*alpha; if(d<46) f-=(46-d)/d*0.25;
+    dx*=f;dy*=f;a.vx+=dx/2;a.vy+=dy/2;b.vx-=dx/2;b.vy-=dy/2;}}
+  links.forEach(l=>{const a=act[l.i],b=act[l.j];let dx=b.x-a.x,dy=b.y-a.y;const d=Math.hypot(dx,dy)||0.01;
+    const f=(d-T[l.i][l.j])/d*0.05*alpha;dx*=f;dy*=f;a.vx+=dx/2;a.vy+=dy/2;b.vx-=dx/2;b.vy-=dy/2;});
+  let cx=0,cy=0;
+  act.forEach(p=>{ if(p.fx!==null){p.x=p.fx;p.y=p.fy;p.vx=p.vy=0;} else {p.vx*=0.6;p.vy*=0.6;p.x+=p.vx;p.y+=p.vy;} cx+=p.x;cy+=p.y; });
+  cx=W/2-cx/n; cy=H/2-cy/n;
+  act.forEach(p=>{ if(p.fx===null){p.x+=cx*0.08;p.y+=cy*0.08;} p.x=Math.max(24,Math.min(W-24,p.x)); p.y=Math.max(topPad,Math.min(H-14,p.y)); });
+  alpha+=(0-alpha)*0.012;
+}
+function frame(){ tick();tick();paint(); if(alpha>0.004||drag) requestAnimationFrame(frame); else running=false; }
+function reheat(a){ alpha=Math.max(alpha,a); if(!running){running=true;requestAnimationFrame(frame);} }
+
+/* ---------- Trascinamento, zoom e spostamento (mouse e touch) ---------- */
+let drag=null; const ptrs=new Map(); let gesture=null;
+function toWorld(cx,cy){ const p=svg.createSVGPoint(); p.x=cx;p.y=cy; return p.matrixTransform(vp.getScreenCTM().inverse()); }
+function toSvg(cx,cy){ const p=svg.createSVGPoint(); p.x=cx;p.y=cy; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+function startDrag(e,n){
+  e.preventDefault(); e.stopPropagation();
+  drag={n,sx:e.clientX,sy:e.clientY,moved:false,id:e.pointerId};
+  try{svg.setPointerCapture(e.pointerId);}catch(_){}
+  const p=toWorld(e.clientX,e.clientY); n.fx=p.x; n.fy=p.y; reheat(0.15);
+}
+function startGesture(){
+  const ps=[...ptrs.values()];
+  if(ps.length===1) gesture={type:'pan',sx:ps[0].x,sy:ps[0].y,vx:view.x,vy:view.y,moved:false};
+  else if(ps.length>=2){ const [a,b]=ps, m=toSvg((a.x+b.x)/2,(a.y+b.y)/2);
+    gesture={type:'pinch',d0:Math.hypot(a.x-b.x,a.y-b.y)||1,k0:view.k,mx:m.x,my:m.y,vx:view.x,vy:view.y,moved:true}; }
+}
+function zoomAt(sx,sy,k){ k=Math.max(0.5,Math.min(4,k)); const wx=(sx-view.x)/view.k, wy=(sy-view.y)/view.k; view.k=k; view.x=sx-wx*k; view.y=sy-wy*k; applyView(); }
+svg.addEventListener('pointerdown',e=>{
+  if(drag) return;
+  try{svg.setPointerCapture(e.pointerId);}catch(_){}
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); startGesture();
+});
+svg.addEventListener('pointermove',e=>{
+  if(drag&&e.pointerId===drag.id){
+    if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>5) drag.moved=true;
+    const p=toWorld(e.clientX,e.clientY); drag.n.fx=p.x; drag.n.fy=p.y; reheat(0.3); return;
+  }
+  if(!ptrs.has(e.pointerId)) return;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(!gesture) return;
+  if(gesture.type==='pan'){ const p=ptrs.values().next().value; const dx=p.x-gesture.sx, dy=p.y-gesture.sy;
+    if(Math.hypot(dx,dy)>5) gesture.moved=true;
+    const s=W/(svg.getBoundingClientRect().width||W);
+    view.x=gesture.vx+dx*s; view.y=gesture.vy+dy*s; applyView(); }
+  else { const [a,b]=[...ptrs.values()]; const k=Math.max(0.5,Math.min(4,gesture.k0*Math.hypot(a.x-b.x,a.y-b.y)/gesture.d0));
+    const wx=(gesture.mx-gesture.vx)/gesture.k0, wy=(gesture.my-gesture.vy)/gesture.k0;
+    view.k=k; view.x=gesture.mx-wx*k; view.y=gesture.my-wy*k; applyView(); }
+});
+function endPointer(e){
+  if(drag&&e.pointerId===drag.id){ const {n,moved}=drag; n.fx=n.fy=null; drag=null; if(!moved) select(n===selected?null:n); return; }
+  if(!ptrs.has(e.pointerId)) return;
+  const g=gesture; ptrs.delete(e.pointerId);
+  if(g&&g.type==='pan'&&!g.moved&&ptrs.size===0) select(null);
+  gesture=null; if(ptrs.size) startGesture();
+}
+svg.addEventListener('pointerup',endPointer);
+svg.addEventListener('pointercancel',endPointer);
+svg.addEventListener('wheel',e=>{ e.preventDefault(); const p=toSvg(e.clientX,e.clientY); zoomAt(p.x,p.y,view.k*(e.deltaY<0?1.15:1/1.15)); },{passive:false});
+document.getElementById('zin').onclick=()=>zoomAt(W/2,H/2,view.k*1.3);
+document.getElementById('zout').onclick=()=>zoomAt(W/2,H/2,view.k/1.3);
+document.getElementById('zreset').onclick=()=>{ view={k:1,x:0,y:0}; applyView(); };
+function select(n){ selected=n; highlight(); if(n&&n.fam!=='U'){ showTab('det'); renderDet(); } else if(n) showTab('res'); else renderDet(); }
+
+/* ---------- Barra della mappa ---------- */
+const toolbar=document.getElementById('toolbar');
+FAMS.forEach(f=>{ const b=document.createElement('button'); b.className='fam'; b.setAttribute('aria-pressed','true'); b.dataset.fam=f;
+  b.innerHTML=`<span class="dot" style="background:${FAM[f].c}"></span>${FAM[f].n}`;
+  b.onclick=()=>{ showFam[f]=!showFam[f]; if(!Object.values(showFam).some(Boolean)){showFam[f]=true;return;} b.setAttribute('aria-pressed',String(showFam[f])); rebuild(); renderRes(); if(!selected) renderDet(); };
+  toolbar.append(b); });
+const sel=document.createElement('select');
+const schoolIds=Object.keys(DATA.scuole).filter(s=>nodes.some(n=>n.scuole.includes(s))).sort((a,b)=>DATA.scuole[a].localeCompare(DATA.scuole[b],'it'));
+sel.innerHTML='<option value="">Tutte le scuole</option>'+schoolIds.map(s=>`<option value="${s}">${esc(DATA.scuole[s])}</option>`).join('');
+sel.onchange=()=>{ school=sel.value; highlight(); if(!selected){ showTab('det'); renderDet(); } };
+toolbar.append(sel);
+
+/* ---------- Viste e schede ---------- */
+let mapReady=false;
+function showView(v){
+  document.querySelectorAll('nav.views button').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  document.getElementById('quiz').hidden=v!=='quiz'; document.getElementById('mapview').hidden=v!=='mapview';
+  if(v==='mapview'){ requestAnimationFrame(()=>{ if(!mapReady){ placeInitial(); mapReady=true; } else measure();
+    if(tuOn&&hasProfile()&&!act.includes(tuNode)){ tuNode.x=W/2; tuNode.y=H/2; }
+    rebuild(); renderRes(); renderDet(); }); }
+}
+document.querySelectorAll('nav.views button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+const tabs={res:document.getElementById('tab-res'),det:document.getElementById('tab-det'),doc:document.getElementById('tab-doc')};
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function showTab(t){ document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t)); for(const k in tabs) tabs[k].hidden=(k!==t); }
+
+function rankHTML(list,{noPct=false,num=false}={}){
+  return `<ol class="rank${num?' num':''}">`+list.map(({n,s})=>`<li><button data-id="${n.id}"><span class="dot" style="background:${FAM[n.fam].c}"></span>${esc(n.nome)}</button>`+
+    (noPct?'<span></span>':`<span class="pct">${pct(s)}%</span><span class="bar"><i style="width:${Math.max(0,pct(s))}%;background:${FAM[n.fam].c}"></i></span>`)+'</li>').join('')+'</ol>';
+}
+function wireRank(box){ box.querySelectorAll('ol.rank button').forEach(b=>b.onclick=()=>{
+  const n=nodes.find(x=>x.id===b.dataset.id);
+  if(!showFam[n.fam]){ showFam[n.fam]=true; toolbar.querySelector(`[data-fam="${n.fam}"]`).setAttribute('aria-pressed','true'); rebuild(); }
+  select(n); }); }
+function areasHTML(v,color){ const max=Math.max(...v,0.001);
+  return '<div class="areas">'+AREE.map(([k,name],i)=>v[i]>0?`<span>${name}</span><span class="b"><i style="width:${(v[i]/max*100).toFixed(1)}%;background:${color}"></i></span><span>${fmt(v[i])}</span>`:'').join('')+'</div>'; }
+
+
+const CFP_URL='https://www.provincia.mb.it/bussola/offerta-formativa/centri-di-formazione-professionale/';
+function cfpSuggested(r){ return r.slice(0,5).some(o=>o.n.fam==='P'); }
+const CFP_TEXT='Ti piacciono i lavori pratici? Guarda anche i percorsi dei centri di formazione professionale (IeFP): durano tre o quattro anni, con tanto laboratorio e stage in azienda, e portano a una qualifica o a un diploma professionale. Non sono nella mappa perché sono organizzati in modo diverso dalle scuole statali.';
+function renderRes(){
+  const box=tabs.res;
+  if(!(tuOn&&hasProfile())){
+    box.innerHTML=`<h2>Il tuo risultato</h2><p class="hint">Rispondi alle domande su «Le tue materie»: il nodo «Tu» comparirà sulla mappa vicino agli indirizzi che ti somigliano di più.</p>
+      <button class="btn cta" id="go-quiz">Vai alle domande</button>
+      <p class="hint" style="margin-top:16px">Intanto puoi esplorare la mappa: ogni pallino è un indirizzo attivo in provincia, e quelli vicini hanno materie simili. Toccane uno per vedere materie e scuole.</p>`;
+    box.querySelector('#go-quiz').onclick=()=>showView('quiz'); return;
+  }
+  const pool=nodes.filter(n=>showFam[n.fam]);
+  const r=ranking(tuNode,pool).slice(0,10);
+  box.innerHTML=`<h2>Gli indirizzi più vicini a te</h2>
+    <p class="hint">I nodi più grandi sulla mappa sono quelli più affini alle tue risposte. Tocca un indirizzo per saperne di più.</p>
+    ${rankHTML(r,{num:true})}
+    ${cfpSuggested(r)?`<div class="cfp"><p>${CFP_TEXT}</p><a href="${CFP_URL}" target="_blank" rel="noopener">Vedi i corsi sulla Bussola →</a></div>`:''}
+    <div class="nav-btns"><button class="btn small" id="edit">Modifica le risposte</button><button class="btn cta" id="pdf">Salva PDF</button></div>
+    <p class="note">«Salva PDF» apre la stampa: scegli «Salva come PDF» come stampante.</p>
+    <p class="note">È uno spunto per parlarne con famiglia e insegnanti, non un verdetto: contano anche il metodo di studio, i progetti per il futuro e le scuole che visiterai agli open day.</p>`;
+  wireRank(box);
+  box.querySelector('#edit').onclick=()=>{ step=0; renderStep(); showView('quiz'); };
+  box.querySelector('#pdf').onclick=savePDF;
+}
+
+function renderDet(){
+  const box=tabs.det, n=selected;
+  if(!n||n.fam==='U'){
+    let list=nodes.filter(x=>showFam[x.fam]);
+    let head='<p class="hint">Tocca un indirizzo sulla mappa per leggere la descrizione, le materie con le ore e le scuole che lo offrono.</p>';
+    if(school){ list=list.filter(x=>x.scuole.includes(school)); head=`<h2>${esc(DATA.scuole[school])}</h2><p class="hint">Indirizzi attivi in questa scuola, evidenziati sulla mappa:</p>`; }
+    box.innerHTML=head+`<h3>Indirizzi (${list.length})</h3>`+rankHTML(list.map(x=>({n:x,s:1})),{noPct:true}); wireRank(box); return;
+  }
+  const tot=n.materie.reduce((s,m)=>s+m.h,0);
+  const aff = (tuOn&&hasProfile()) ? `<div class="aff">Affinità con te: ${pct(simNodes(tuNode,n))}%</div>` : '';
+  box.innerHTML=`<h2>${esc(n.nome)}</h2><span class="chip" style="background:${FAM[n.fam].c}">${FAM[n.fam].n}</span>${aff}
+    <p class="descr">${esc(n.desc||'')}</p>
+    <h3>Scuole che lo offrono (${n.scuole.length})</h3><ul class="scuole">${n.scuole.map(s=>`<li>${esc(DATA.scuole[s])}</li>`).join('')}</ul>
+    <h3>Indirizzi più simili</h3><div id="det-rank"></div>
+    <h3>Ore settimanali medie per area${bonus!==1?' (con bonus)':''}</h3><div id="det-areas"></div>
+    <h3>Materie e ore settimanali medie</h3>
+    <table class="mat">${n.materie.map((m,i)=>`<tr class="${m.c?'car':''}"><td><label><input type="checkbox" data-i="${i}" ${m.c?'checked':''} title="Materia caratterizzante">${esc(m.n)}</label></td><td class="a">${Object.keys(m.a).map(a=>AREA_NAME[a].split(/[ ,]/)[0]).join(' + ')}</td><td class="h">${fmt(m.h)}</td></tr>`).join('')}
+    <tr><td><b>Totale (senza religione e quota della scuola)</b></td><td></td><td class="h"><b>${fmt(tot)}</b></td></tr></table>
+    <p class="note">In grassetto e con la spunta le materie caratterizzanti, che ricevono il bonus. Fonte del quadro orario: ${esc(n.fonte)}.${n.fam==='P'?' Nei professionali le scuole hanno ampia autonomia sull\'orario: altrove le ore possono essere distribuite in modo diverso.':''}</p>
+    <div id="det-reset"></div>`;
+  box.querySelectorAll('table.mat input').forEach(cb=>cb.onchange=()=>{ n.materie[+cb.dataset.i].c=cb.checked; cb.closest('tr').classList.toggle('car',cb.checked); save(); rebuild(); updateDet(); renderRes(); });
+  updateDet();
+}
+function updateDet(){
+  const n=selected; if(!n||n.fam==='U') return;
+  const r=document.getElementById('det-rank'); r.innerHTML=rankHTML(ranking(n,nodes).slice(0,5)); wireRank(r);
+  document.getElementById('det-areas').innerHTML=areasHTML(areaHours(n),FAM[n.fam].c);
+  const rs=document.getElementById('det-reset');
+  rs.innerHTML=isEdited(n)?'<button class="btn small">Ripristina le materie caratterizzanti originali</button>':'';
+  if(isEdited(n)) rs.firstChild.onclick=()=>{ n.materie.forEach((m,i)=>m.c=ORIGCAR[n.id][i]); save(); rebuild(); renderDet(); renderRes(); };
+}
+
+function exportText(){
+  const lines=[]; nodes.forEach(n=>{ if(isEdited(n)) lines.push(`${n.nome}: caratterizzanti = ${n.materie.filter(m=>m.c).map(m=>m.n).join('; ')||'nessuna'}`); });
+  lines.push(`Bonus: ×${fmt(bonus)}`);
+  const pw=AREE.map(([k,name],i)=>weights[i]!==1?`${name} ${fmt(weights[i])}`:null).filter(Boolean).join('; ');
+  lines.push('Pesi delle aree: '+(pw||'tutti 1')); return lines.join('\n');
+}
+function renderDoc(){
+  const box=tabs.doc;
+  box.innerHTML=`<p class="hint">Impostazioni per insegnanti e famiglie curiose: cambiano il modo in cui vengono confrontati gli indirizzi.</p>
+    <h3>Bonus per le materie caratterizzanti</h3>
+    <label class="row"><span>Moltiplicatore</span><input type="range" min="1" max="2" step="0.05" value="${bonus}" id="bon"><output>×${fmt(bonus)}</output></label>
+    <p class="hint">×1 = nessun bonus. Con ×1,2 un'ora di una materia caratterizzante conta come 1,2 ore.</p>
+    <h3>Collegamenti</h3>
+    <label class="row"><span>Collegamenti per nodo</span><input type="range" min="1" max="6" step="1" value="${K}" id="kk"><output>${K}</output></label>
+    <button class="btn small" id="mix">Rimescola la mappa</button>
+    <h3>Importanza delle aree</h3>
+    ${AREE.map(([k,name],i)=>`<label class="row"><span>${name}</span><input type="range" min="0" max="3" step="0.5" value="${weights[i]}" data-w="${i}"><output>${fmt(weights[i])}</output></label>`).join('')}
+    <button class="btn small" id="wreset">Ripristina i pesi</button>
+    <h3>Le tue modifiche</h3>
+    <button class="btn small" id="copy">Copia le modifiche</button><span id="copied"></span>
+    <h3>Fonti e metodo</h3>
+    <p class="note">Indirizzi e scuole provengono da «La Bussola» della Provincia di Monza e della Brianza, esclusi corsi serali e centri di formazione professionale. I quadri orari di licei e tecnici sono quelli della Bussola; per i professionali, che la Bussola non riporta, sono presi dal sito di una scuola della provincia (indicata nella scheda). Le ore sono la media settimanale sui cinque anni (per i tecnici il monte ore annuo diviso 33), escluse religione e la quota oraria lasciata alla scuola. Le «scienze sperimentali» dei tecnici sono attribuite per un terzo a fisica e per due terzi a scienze. Le materie caratterizzanti seguono le discipline della seconda prova dell'esame di Stato per licei e tecnici; per i professionali sono le due materie di indirizzo principali. La vicinanza è la similarità del coseno pesata tra i profili: conta la proporzione tra le aree, non il totale delle ore. Le risposte del questionario restano solo su questo dispositivo.</p>`;
+  const bon=box.querySelector('#bon'); bon.oninput=()=>{ bonus=+bon.value; bon.nextElementSibling.textContent='×'+fmt(bonus); save(); rebuild(); if(selected) renderDet(); renderRes(); };
+  const kk=box.querySelector('#kk'); kk.oninput=()=>{ K=+kk.value; kk.nextElementSibling.textContent=K; save(); rebuild(); };
+  box.querySelector('#mix').onclick=()=>{ placeInitial(); reheat(1); };
+  box.querySelectorAll('input[data-w]').forEach(inp=>inp.oninput=()=>{ weights[+inp.dataset.w]=+inp.value; inp.nextElementSibling.textContent=fmt(+inp.value); save(); rebuild(); updateDet(); renderRes(); });
+  box.querySelector('#wreset').onclick=()=>{ weights=AK.map(()=>1); save(); rebuild(); renderDoc(); updateDet(); renderRes(); };
+  box.querySelector('#copy').onclick=async()=>{ const out=box.querySelector('#copied');
+    try{ await navigator.clipboard.writeText(exportText()); out.textContent='Copiate negli appunti.'; }
+    catch(e){ out.textContent=''; const ta=document.createElement('textarea'); ta.value=exportText(); ta.rows=6; ta.style.width='100%'; out.after(ta); ta.select(); } };
+}
+
+/* ---------- Salva PDF ---------- */
+function reportHTML(){
+  const d=new Date().toLocaleDateString('it-IT');
+  const r=ranking(tuNode,nodes.filter(n=>showFam[n.fam])).slice(0,10);
+  const risposte=MATERIE.filter(m=>answers[m.id]!==null).map(m=>`<tr><td>${m.n}</td><td style="text-align:right">${answers[m.id]}</td></tr>`).join('');
+  const nonso=MATERIE.filter(m=>answers[m.id]===null).map(m=>m.n).join(', ');
+  // istantanea del grafo, con la vista iniziale e senza evidenziazioni
+  const clone=svg.cloneNode(true);
+  clone.setAttribute('width','100%'); clone.setAttribute('style','width:100%;height:auto;border:1px solid #E7E3DA;border-radius:10px');
+  clone.querySelector('#vp').setAttribute('transform','');
+  clone.querySelectorAll('.dim,.hi,.sel,.school').forEach(x=>x.classList.remove('dim','hi','sel','school'));
+  return `<div class="rep"><h1>Gli indirizzi più vicini a me</h1><p class="sub">Mappa degli indirizzi delle superiori – Monza e Brianza · ${d}</p>
+    <h2>Indirizzi più affini</h2><ol>${r.map(o=>`<li><b>${esc(o.n.nome)}</b> – ${pct(o.s)}% <span class="fam" style="color:${FAM[o.n.fam].c}">${FAM[o.n.fam].n}</span><br><span class="sc">${o.n.scuole.map(s=>esc(DATA.scuole[s])).join(' · ')}</span></li>`).join('')}</ol>
+    ${cfpSuggested(r)?`<p class="sc"><b>Da guardare anche:</b> ${CFP_TEXT} ${CFP_URL}</p>`:''}
+    <h2>La mappa</h2>${clone.outerHTML}
+    <h2>Le mie risposte</h2><table>${risposte}</table>${nonso?`<p class="sc">«Non lo so»: ${nonso}.</p>`:''}
+    <p class="sc">È uno spunto per parlarne con famiglia e insegnanti, non un verdetto.</p></div>`;
+}
+const REPORT_CSS=`body{font-family:"Nunito Sans",Arial,sans-serif;color:#1F2A55;margin:18px}h1{font-family:Poppins,Arial,sans-serif;font-size:20px;margin:0}h2{font-family:Poppins,Arial,sans-serif;font-size:15px;margin:18px 0 6px;color:#13A89E}
+.sub,.sc{color:#5D6680;font-size:11px}ol{padding-left:20px;font-size:12.5px}li{margin-bottom:5px}.fam{font-size:11px;font-weight:700}table{border-collapse:collapse;font-size:12px}td{border-bottom:1px solid #E7E3DA;padding:2px 10px 2px 0}
+svg{max-height:13cm}svg .link{stroke:#8D939A;stroke-opacity:.4}svg .link.tu{stroke:#FF6B57;stroke-opacity:.8;stroke-dasharray:5 3}svg .node circle{stroke:#fff;stroke-width:2}
+svg .node text{font-size:11px;fill:#1F2A55;paint-order:stroke;stroke:#fff;stroke-width:3px;font-family:Arial,sans-serif}svg .node.tu text{fill:#FF6B57;font-weight:800}
+h2{page-break-after:avoid}svg,table{page-break-inside:avoid}@page{margin:12mm}`;
+function savePDF(){
+  const html=reportHTML();
+  let w=null; try{ w=window.open('','_blank'); }catch(e){}
+  if(w&&w.document){
+    w.document.write(`<!DOCTYPE html><html lang="it"><head><meta charset="utf-8"><title>Gli indirizzi più vicini a me</title><style>${REPORT_CSS}</style></head><body>${html}<script>setTimeout(function(){window.print()},400)<\/script></body></html>`);
+    w.document.close(); return;
+  }
+  // ripiego: stampa della pagina stessa con una vista dedicata
+  const pa=document.getElementById('print-area'); pa.innerHTML=`<style>${REPORT_CSS.replace(/body\{/,'#print-area{')}</style>`+html;
+  try{ window.print(); }catch(e){}
+}
+
+/* ---------- Avvio ---------- */
+renderHow(); renderStep(); renderDoc(); renderRes();
+let rt; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(!document.getElementById('mapview').hidden){ measure(); rebuild(); } },150); });
+</script>
+</body>
+</html>
